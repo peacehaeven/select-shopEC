@@ -11,3 +11,6 @@ https://docs.google.com/spreadsheets/d/1UuZ-SbOh3jC3UoJuTVPsflqbF1cRhi_6EeqbMxnQ
 | **Git/ドキュメント管理者** |　平田　|　　|
 | **開発リード** |　下條 |　佐々木　|
 | **QA（品質保証）担当** | 山本 |　佐々木　|
+
+## 参考サイト
+https://shopping.wbf.co.jp/
