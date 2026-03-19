@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>マイページ — なにわセレクトショップ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="global.css">
+  <style>
+    /* 注文カード */
+    .order-card {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .order-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: #f5f0e8;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .order-meta { font-size: 12px; color: var(--muted); }
+    .order-meta strong { color: var(--ink); font-size: 13px; }
+    .order-card-body { padding: 20px; }
+
+    /* 注文商品リスト */
+    .order-items { border-top: 1px solid var(--border); padding-top: 16px; }
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--border);
+    }
+    .order-item:last-child { border-bottom: none; }
+    .order-item-qty { color: var(--muted); font-size: 12px; margin-left: 6px; }
+    .order-item-price { color: var(--vermilion); }
+
+    /* 合計行 */
+    .order-total {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 16px;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    .order-total strong { font-size: 16px; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">なにわ<span>セレクト</span>ショップ</div>
+  <div class="nav-links">
+    <a href="index.html">商品一覧</a>
+    <a href="cart.html">🛒 カート（2）</a>
+    <a href="login.html">ログアウト</a>
+  </div>
+</nav>
+
+<main>
+    <h2 class="section-title">注文履歴</h2>
+
+      <!-- 注文① 発送済み -->
+      <div class="order-card">
+        <div class="order-card-header">
+          <div>
+            <div class="order-meta">注文番号</div>
+            <strong>#20250601-0042</strong>
+          </div>
+          <div>
+            <div class="order-meta">注文日</div>
+            <strong>2025年6月1日</strong>
+          </div>
+          <div>
+            <div class="order-meta">合計金額</div>
+            <strong>¥13,760</strong>
+          </div>
+          <span class="status status-shipped">発送済み</span>
+        </div>
+        <div class="order-card-body">
+          <div class="order-items">
+            <div class="order-item">
+              <span>なにわ黒毛和牛 すき焼きセット <span class="order-item-qty">× 1</span></span>
+              <span class="order-item-price">¥8,640</span>
+            </div>
+            <div class="order-item">
+              <span>泉州水茄子 浅漬けセット <span class="order-item-qty">× 2</span></span>
+              <span class="order-item-price">¥4,320</span>
+            </div>
+          </div>
+          <div class="order-total">
+            <span style="color: var(--muted); font-size: 13px;">送料 ¥800 含む</span>
+            <span>合計 <strong>¥13,760</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 注文② 注文受付済み -->
+      <div class="order-card">
+        <div class="order-card-header">
+          <div>
+            <div class="order-meta">注文番号</div>
+            <strong>#20250528-0036</strong>
+          </div>
+          <div>
+            <div class="order-meta">注文日</div>
+            <strong>2025年5月28日</strong>
+          </div>
+          <div>
+            <div class="order-meta">合計金額</div>
+            <strong>¥4,688</strong>
+          </div>
+          <span class="status status-new">注文受付済み</span>
+        </div>
+        <div class="order-card-body">
+          <div class="order-items">
+            <div class="order-item">
+              <span>河内鴨 ロース 冷凍500g <span class="order-item-qty">× 1</span></span>
+              <span class="order-item-price">¥3,888</span>
+            </div>
+          </div>
+          <div class="order-total">
+            <span style="color: var(--muted); font-size: 13px;">送料 ¥800 含む</span>
+            <span>合計 <strong>¥4,688</strong></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+</main>
+
+<footer>© 2025 なにわセレクトショップ</footer>
+
+</body>
+</html>

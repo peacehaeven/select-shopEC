@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ログイン / 会員登録 — なにわセレクトショップ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="global.css">
+  <style>
+    .auth-wrap {
+      max-width: 400px;
+      margin: 64px auto;
+    }
+    .auth-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+    .auth-tab.active {
+      color: var(--vermilion);
+      border-bottom-color: var(--vermilion);
+      font-weight: 500;
+    }
+    .auth-panel { display: none; }
+    .auth-panel.active { display: block; }
+    .forgot-link {
+      display: block;
+      text-align: center;
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.auth-panel').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      document.getElementById('panel-' + tab).classList.add('active');
+    }
+  </script>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">なにわ<span>セレクト</span>ショップ</div>
+</nav>
+
+<main>
+  <div class="auth-wrap">
+
+    <div class="auth-tabs">
+      <button id="tab-login" class="auth-tab active" onclick="switchTab('login')">ログイン</button>
+      <button id="tab-register" class="auth-tab" onclick="switchTab('register')">会員登録</button>
+    </div>
+
+    <!-- ログインフォーム -->
+    <div id="panel-login" class="auth-panel active">
+      <div class="card">
+        <div class="form-group">
+          <label>メールアドレス</label>
+          <input type="email" placeholder="example@email.com">
+        </div>
+        <div class="form-group">
+          <label>パスワード</label>
+          <input type="password" placeholder="••••••••">
+        </div>
+        <a href="mypage.html" class="btn btn-primary" style="display: block; margin-top: 8px;">ログイン</a>
+        <a href="#" class="forgot-link">パスワードをお忘れの方</a>
+      </div>
+    </div>
+
+    <!-- 会員登録フォーム -->
+    <div id="panel-register" class="auth-panel">
+      <div class="card">
+        <div class="form-group">
+          <label>お名前</label>
+          <input type="text" placeholder="山田 太郎">
+        </div>
+        <div class="form-group">
+          <label>メールアドレス</label>
+          <input type="email" placeholder="example@email.com">
+        </div>
+        <div class="form-group">
+          <label>パスワード</label>
+          <input type="password" placeholder="8文字以上">
+        </div>
+        <a href="mypage.html" class="btn btn-primary" style="display: block; margin-top: 8px;">会員登録してログイン</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>© 2025 なにわセレクトショップ</footer>
+
+</body>
+</html>
