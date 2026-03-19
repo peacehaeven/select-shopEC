@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注文管理 — なにわセレクトショップ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../global.css">
+  <style>
+    .admin-layout { display: grid; grid-template-columns: 180px 1fr; gap: 32px; align-items: start; }
+    .admin-nav { background: var(--warm-white); border: 1px solid var(--border); border-radius: 4px; padding: 16px 0; }
+    .admin-nav a { display: block; padding: 10px 20px; font-size: 13px; color: var(--ink); text-decoration: none; }
+    .admin-nav a:hover { background: var(--cream); }
+    .admin-nav a.active { background: var(--cream); color: var(--vermilion); font-weight: 500; border-left: 3px solid var(--vermilion); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">なにわ<span>セレクト</span>ショップ <span style="font-size: 12px; color: var(--muted);">管理</span></div>
+  <div class="nav-links">
+    <a href="../index.html" style="color: #ccc;">ショップへ戻る</a>
+    <a href="login.html" style="color: #ccc;">ログアウト</a>
+  </div>
+</nav>
+
+<main>
+  <div class="admin-layout">
+
+    <!-- サイドナビ -->
+    <nav class="admin-nav">
+      <a href="orders.html" class="active">注文管理</a>
+      <a href="products.html">商品管理</a>
+    </nav>
+
+    <!-- 注文一覧 -->
+    <div>
+      <h2 class="section-title">注文一覧</h2>
+      <div class="card" style="padding: 0;">
+        <table>
+          <thead>
+            <tr>
+              <th>注文番号</th>
+              <th>注文日</th>
+              <th>お名前</th>
+              <th>合計</th>
+              <th>ステータス</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>#20250601-0042</td>
+              <td>2025/06/01</td>
+              <td>山田 太郎</td>
+              <td>¥13,760</td>
+              <td><span class="status status-new">注文受付済み</span></td>
+              <td><button class="btn btn-success" style="padding: 4px 12px; font-size: 12px;">発送済みにする</button></td>
+            </tr>
+            <tr>
+              <td>#20250601-0041</td>
+              <td>2025/06/01</td>
+              <td>鈴木 花子</td>
+              <td>¥5,400</td>
+              <td><span class="status status-new">注文受付済み</span></td>
+              <td><button class="btn btn-success" style="padding: 4px 12px; font-size: 12px;">発送済みにする</button></td>
+            </tr>
+            <tr>
+              <td>#20250531-0040</td>
+              <td>2025/05/31</td>
+              <td>田中 一郎</td>
+              <td>¥3,456</td>
+              <td><span class="status status-shipped">発送済み</span></td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>#20250531-0039</td>
+              <td>2025/05/31</td>
+              <td>佐藤 恵子</td>
+              <td>¥9,720</td>
+              <td><span class="status status-shipped">発送済み</span></td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>© 2025 なにわセレクトショップ 管理画面</footer>
+
+</body>
+</html>
