@@ -12,6 +12,63 @@
     .admin-nav a { display: block; padding: 10px 20px; font-size: 13px; color: var(--ink); text-decoration: none; }
     .admin-nav a:hover { background: var(--cream); }
     .admin-nav a.active { background: var(--cream); color: var(--vermilion); font-weight: 500; border-left: 3px solid var(--vermilion); }
+
+    /* ── モーダル ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(28, 28, 30, 0.55);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      width: 100%;
+      max-width: 460px;
+      padding: 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      animation: modalIn 0.18s ease;
+    }
+    @keyframes modalIn {
+      from { transform: translateY(-12px); opacity: 0; }
+      to   { transform: translateY(0);     opacity: 1; }
+    }
+
+    .modal-title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+    .modal-order-num {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* 追跡番号列 */
+    td.tracking-cell {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    td.tracking-cell a {
+      color: var(--vermilion);
+      text-decoration: underline;
+      font-size: 12px;
+    }
   </style>
 </head>
 <body>
@@ -45,6 +102,7 @@
               <th>お名前</th>
               <th>合計</th>
               <th>ステータス</th>
+              <th>追跡番号</th>
               <th>操作</th>
             </tr>
           </thead>
@@ -55,7 +113,15 @@
               <td>山田 太郎</td>
               <td>¥13,760</td>
               <td><span class="status status-new">注文受付済み</span></td>
-              <td><button class="btn btn-success" style="padding: 4px 12px; font-size: 12px;">発送済みにする</button></td>
+              <td class="tracking-cell">—</td>
+              <td>
+                <button
+                  class="btn btn-success"
+                  style="padding: 4px 12px; font-size: 12px;"
+                  onclick="openModal('20250601-0042', '山田 太郎')">
+                  発送済みにする
+                </button>
+              </td>
             </tr>
             <tr>
               <td>#20250601-0041</td>
@@ -63,7 +129,15 @@
               <td>鈴木 花子</td>
               <td>¥5,400</td>
               <td><span class="status status-new">注文受付済み</span></td>
-              <td><button class="btn btn-success" style="padding: 4px 12px; font-size: 12px;">発送済みにする</button></td>
+              <td class="tracking-cell">—</td>
+              <td>
+                <button
+                  class="btn btn-success"
+                  style="padding: 4px 12px; font-size: 12px;"
+                  onclick="openModal('20250601-0041', '鈴木 花子')">
+                  発送済みにする
+                </button>
+              </td>
             </tr>
             <tr>
               <td>#20250531-0040</td>
@@ -71,6 +145,10 @@
               <td>田中 一郎</td>
               <td>¥3,456</td>
               <td><span class="status status-shipped">発送済み</span></td>
+              <td class="tracking-cell">
+                ヤマト運輸<br>
+                <a href="#" onclick="return false;">1234-5678-9012</a>
+              </td>
               <td>—</td>
             </tr>
             <tr>
@@ -79,6 +157,10 @@
               <td>佐藤 恵子</td>
               <td>¥9,720</td>
               <td><span class="status status-shipped">発送済み</span></td>
+              <td class="tracking-cell">
+                ゆうパック<br>
+                <a href="#" onclick="return false;">0987-6543-2100</a>
+              </td>
               <td>—</td>
             </tr>
           </tbody>
@@ -90,6 +172,102 @@
 </main>
 
 <footer>© 2025 なにわセレクトショップ 管理画面</footer>
+
+
+<!-- ══════════════════════════════════════════
+     発送情報入力モーダル
+═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="shipModal">
+  <div class="modal">
+    <p class="modal-title">発送情報の入力</p>
+    <p class="modal-order-num" id="modalOrderNum">注文番号：#20250601-0042　様</p>
+
+    <div class="form-group">
+      <label for="carrierSelect">配送業者</label>
+      <select id="carrierSelect">
+        <option value="">選択してください</option>
+        <option value="yamato">ヤマト運輸</option>
+        <option value="sagawa">佐川急便</option>
+        <option value="yupack">ゆうパック</option>
+        <option value="other">その他</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="trackingInput">追跡番号</label>
+      <input
+        type="text"
+        id="trackingInput"
+        placeholder="例：1234-5678-9012"
+      >
+      <p style="font-size: 12px; color: var(--muted); margin-top: 6px;">
+        ※ 入力後、お客様のメールアドレスに発送通知メールが自動送信されます。
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">キャンセル</button>
+      <button class="btn btn-success" onclick="submitShip()">発送済みにする</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  let currentOrderNum = '';
+  let currentName    = '';
+
+  function openModal(orderNum, name) {
+    currentOrderNum = orderNum;
+    currentName     = name;
+    document.getElementById('modalOrderNum').textContent =
+      '注文番号：#' + orderNum + '　' + name + ' 様';
+    document.getElementById('carrierSelect').value = '';
+    document.getElementById('trackingInput').value  = '';
+    document.getElementById('shipModal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('shipModal').classList.remove('open');
+  }
+
+  function submitShip() {
+    const carrier  = document.getElementById('carrierSelect').value;
+    const tracking = document.getElementById('trackingInput').value.trim();
+
+    if (!carrier) {
+      alert('配送業者を選択してください。');
+      return;
+    }
+    if (!tracking) {
+      alert('追跡番号を入力してください。');
+      return;
+    }
+
+    // ── 実装時はここで Supabase 更新 & メール送信 API を呼び出す ──
+    // await supabase.from('orders').update({ status: 'shipped', carrier, tracking_number: tracking })
+    // await fetch('/api/ship', { method: 'POST', body: JSON.stringify({ orderId, carrier, tracking }) })
+
+    // モック：アラートで完了を表示
+    const carrierLabel = document.getElementById('carrierSelect').options[
+      document.getElementById('carrierSelect').selectedIndex
+    ].text;
+
+    alert(
+      '発送情報を登録しました。\n\n' +
+      '注文番号：#' + currentOrderNum + '\n' +
+      '配送業者：' + carrierLabel + '\n' +
+      '追跡番号：' + tracking + '\n\n' +
+      'お客様へ発送通知メールを送信しました。'
+    );
+    closeModal();
+  }
+
+  // オーバーレイクリックで閉じる
+  document.getElementById('shipModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
 
 </body>
 </html>
