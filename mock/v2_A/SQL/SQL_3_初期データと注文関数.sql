@@ -1,7 +1,11 @@
 -- ============================================================
--- 【3回目】初期データ投入 + 注文処理関数（v2_A：会員機能なし版）
+-- 【3回目】初期データ投入 + 注文処理関数（v2_B：発送通知メール対応版）
 -- 2回目が Success になってから実行してください
 -- ============================================================
+-- v2_A からの変更点:
+--   place_guest_order() 関数の変更なし。
+--   carrier / tracking_number は管理者が発送モーダルから直接 UPDATE するため
+--   注文作成関数では扱わない（注文時点では常に NULL）。
 
 
 -- ■ おすすめ商品（3件）
@@ -29,9 +33,11 @@ INSERT INTO products (name, price, stock, is_featured) VALUES
 --     1. カートが空でないか確認
 --     2. 全商品の在庫チェック
 --     3. 小計を計算
---     4. orders テーブルに注文を作成（注文番号はトリガーが自動採番）
---     5. order_items テーブルに明細を作成
---     6. products テーブルの在庫を減算
+--     4. orders テーブルに注文を INSERT（注文番号はトリガーが自動採番）
+--        ※ carrier / tracking_number は NULL のまま作成される
+--           → 管理者が発送モーダルで入力した時点で UPDATE される
+--     5. order_items テーブルに明細を INSERT
+--     6. products テーブルの stock を減算
 --
 --   ※ plpgsql 関数内は1トランザクションで実行される。
 --     途中でエラーが発生した場合は全処理がロールバックされるため、
@@ -97,6 +103,8 @@ BEGIN
     JOIN products p ON p.id = (elem->>'product_id')::UUID;
 
   -- 4. 注文作成（order_number はトリガーが自動採番）
+  --    carrier / tracking_number は NULL のまま作成
+  --    → 管理者が発送モーダルで入力した時点で UPDATE される
   INSERT INTO orders (
     user_id, guest_email,
     shipping_name, shipping_postal_code,

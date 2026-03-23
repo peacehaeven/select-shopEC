@@ -1,11 +1,13 @@
 -- ============================================================
--- 【1回目】テーブル作成 + トリガー（v2_A：会員機能なし版）
+-- 【1回目】テーブル作成 + トリガー（v2_B：発送通知メール対応版）
 -- SQL Editor に貼り付けて「Run」を押してください
 -- ============================================================
+-- v2_A からの変更点:
+--   orders テーブルに carrier（配送業者）と tracking_number（追跡番号）を追加
 
 
 -- ■ profiles: 管理者プロフィール（auth.users と 1:1）
---   ※ v2_A では管理者ログインのみ使用
+--   ※ v2_B では管理者ログインのみ使用
 --   ※ 将来の会員機能追加時にそのまま流用可能（role = 'customer' を使う）
 CREATE TABLE profiles (
   id         UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -51,8 +53,9 @@ CREATE TABLE products (
 
 
 -- ■ cart_items: カート明細
---   ※ v2_A ではカートを localStorage（ブラウザ側）で管理するため未使用
+--   ※ v2_B ではカートを localStorage（ブラウザ側）で管理するため未使用
 --   ※ 将来の会員機能追加時にそのまま使用予定
+--   ※ 未ログインの anon ユーザーは全操作が拒否される（意図的な設計）
 CREATE TABLE cart_items (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id    UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
@@ -63,10 +66,11 @@ CREATE TABLE cart_items (
 
 
 -- ■ orders: 注文ヘッダー
---   ※ v2_A 変更点:
---     - user_id を NULL 許容（ゲスト注文のため）
---     - guest_email を追加（注文照会・将来のメール通知に使用）
---     - CHECK 制約で user_id か guest_email のどちらかを必須に
+--   ※ v2_B 変更点（v2_A からの追加）:
+--     - carrier         : 配送業者名（例: 'ヤマト運輸'）★追加
+--     - tracking_number : 追跡番号（例: '1234-5678-9012'）★追加
+--     → 管理者が「発送済みにする」モーダルで入力した値が保存される
+--     → フェーズ2でこれらの値をメール本文に埋め込んで送信する
 CREATE TABLE orders (
   id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id              UUID REFERENCES profiles(id),
@@ -85,6 +89,9 @@ CREATE TABLE orders (
   -- 【注意】送料を変更する場合は place_guest_order() 関数内の v_shipping も合わせて変更すること
   shipping_fee         INTEGER NOT NULL DEFAULT 800,
   total                INTEGER NOT NULL CHECK (total >= 0),
+  -- ★ v2_B 追加カラム（発送情報）
+  carrier              TEXT,           -- 配送業者名。発送前は NULL。
+  tracking_number      TEXT,           -- 追跡番号。発送前は NULL。
   created_at           TIMESTAMPTZ NOT NULL DEFAULT now(),
   CONSTRAINT orders_user_or_guest
     CHECK (user_id IS NOT NULL OR guest_email IS NOT NULL)

@@ -1,8 +1,11 @@
 -- ============================================================
--- 【2回目】RLS（Row Level Security）ポリシー設定（v2_A：会員機能なし版）
+-- 【2回目】RLS（Row Level Security）ポリシー設定（v2_B：発送通知メール対応版）
 -- 1回目が Success になってから実行してください
 -- ※ 1回目より先に実行するとエラーになります（テーブルが存在しないため）
 -- ============================================================
+-- v2_A からの変更点:
+--   orders_update_admin ポリシーは変更なし。
+--   管理者が carrier / tracking_number を UPDATE できる権限は既存ポリシーで対応済み。
 
 -- ■ RLS とは？
 --   データベースの行単位でアクセス制御する仕組み。
@@ -66,7 +69,7 @@ CREATE POLICY "products_delete_admin" ON products
 
 
 -- ─── cart_items ──────────────────────────────────────
--- ※ v2_A では未使用（カートは localStorage 管理）
+-- ※ v2_B では未使用（カートは localStorage 管理）
 -- ※ 将来の会員機能追加時にそのまま使用予定
 -- ※ 未ログインの anon ユーザーは auth.uid() が NULL のため
 --    以下ポリシーに該当せず、全操作が拒否される（意図的な設計）
@@ -95,10 +98,12 @@ CREATE POLICY "orders_insert_guest" ON orders
     AND guest_email IS NOT NULL
   );
 
--- 管理者は全注文を閲覧・更新可能
+-- 管理者は全注文を閲覧できる
 CREATE POLICY "orders_select_admin" ON orders
   FOR SELECT USING (is_admin());
 
+-- 管理者は全注文を更新できる
+-- ※ status の更新だけでなく、carrier / tracking_number の書き込みもこのポリシーで対応済み
 CREATE POLICY "orders_update_admin" ON orders
   FOR UPDATE USING (is_admin());
 
