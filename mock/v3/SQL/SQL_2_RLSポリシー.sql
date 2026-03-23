@@ -1,11 +1,11 @@
 -- ============================================================
--- 【2回目】RLS（Row Level Security）ポリシー設定（v2_B：発送通知メール対応版）
+-- 【2回目】RLS（Row Level Security）ポリシー設定（v2_C：論理削除対応版）
 -- 1回目が Success になってから実行してください
 -- ※ 1回目より先に実行するとエラーになります（テーブルが存在しないため）
 -- ============================================================
--- v2_A からの変更点:
---   orders_update_admin ポリシーは変更なし。
---   管理者が carrier / tracking_number を UPDATE できる権限は既存ポリシーで対応済み。
+-- v2_B からの変更点:
+--   products_select_all ポリシーに deleted_at IS NULL 条件を追加
+--   products_delete_admin ポリシーを削除（論理削除のため物理削除は不要）
 
 -- ■ RLS とは？
 --   データベースの行単位でアクセス制御する仕組み。
@@ -53,23 +53,23 @@ CREATE POLICY "profiles_update_own" ON profiles
 
 
 -- ─── products ────────────────────────────────────────
--- 誰でも（未ログインのゲストも）商品を閲覧可能
+-- 誰でも（未ログインのゲストも）有効な商品を閲覧可能
+--   ★ deleted_at IS NULL の条件により、論理削除済み商品は返さない
 CREATE POLICY "products_select_all" ON products
-  FOR SELECT USING (true);
+  FOR SELECT USING (deleted_at IS NULL);
 
--- 管理者のみ商品の追加・更新・削除が可能
+-- 管理者のみ商品の追加・更新が可能
+--   ※ 削除は論理削除（deleted_at に日時を SET する UPDATE）で行うため、
+--      DELETE ポリシーは設定しない。
 CREATE POLICY "products_insert_admin" ON products
   FOR INSERT WITH CHECK (is_admin());
 
 CREATE POLICY "products_update_admin" ON products
   FOR UPDATE USING (is_admin());
 
-CREATE POLICY "products_delete_admin" ON products
-  FOR DELETE USING (is_admin());
-
 
 -- ─── cart_items ──────────────────────────────────────
--- ※ v2_B では未使用（カートは localStorage 管理）
+-- ※ v2_C では未使用（カートは localStorage 管理）
 -- ※ 将来の会員機能追加時にそのまま使用予定
 -- ※ 未ログインの anon ユーザーは auth.uid() が NULL のため
 --    以下ポリシーに該当せず、全操作が拒否される（意図的な設計）
