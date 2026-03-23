@@ -1,0 +1,55 @@
+.container {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #dc2626; /* なにわレッド */
+  margin-bottom: 0.5rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.card {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.highlightCard {
+  border: 2px solid #fbbf24;
+}
+
+.productName {
+  font-weight: bold;
+  font-size: 1.125rem;
+  color: #111827;
+}
+
+.price {
+  color: #dc2626;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
