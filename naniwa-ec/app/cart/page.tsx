@@ -5,8 +5,8 @@ import Link from 'next/link';
 
 // 仮の関数（後でSupabaseの処理を書くファイルからインポートします）
 //今は動作確認用に仮で置いておきます
-const createOrder = async (productId: string, quantity: number) => {
-  return { success: true, orderId: "ORD-" + Math.floor(Math.random() * 100000) };
+const createOrder = async (productsId: string, quantity: number) => {
+  return { success: true, ordersId: "ORD-" + Math.floor(Math.random() * 100000) };
 };
 
 export default function CartPage() {
