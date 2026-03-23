@@ -1,60 +1,50 @@
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
-  const response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  })
+  const response = NextResponse.next({ request: { headers: request.headers } });
 
-  // Supabase クライアントを作成（ミドルウェア用）
+  // /admin/login は認証不要（ここで return しないと無限リダイレクト）
+  if (request.nextUrl.pathname === "/admin/login") {
+    return response;
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
     {
       cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
+        getAll() { return request.cookies.getAll(); },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
-            request.cookies.set(name, value)
-            response.cookies.set(name, value, options)
-          })
+            request.cookies.set(name, value);
+            response.cookies.set(name, value, options);
+          });
         },
       },
     }
-  )
+  );
 
-  // セッションを取得（ログイン済みかどうかの確認）
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser();
 
-  // 未ログイン → /admin/login へリダイレクト
   if (!user) {
-    const loginUrl = new URL('/admin/login', request.url)
-    return NextResponse.redirect(loginUrl)
+    return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
-  // ログイン済みだが role が 'admin' でない → トップページへリダイレクト
-  // （NF-04: RLS と二重でチェック）
   const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
 
-  if (!profile || profile.role !== 'admin') {
-    const topUrl = new URL('/', request.url)
-    return NextResponse.redirect(topUrl)
+  if (!profile || profile.role !== "admin") {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
-  return response
+  return response;
 }
 
-// middleware を適用するパスの設定
-// /admin/login は除外（無限リダイレクト防止）
 export const config = {
-  matcher: ['/admin/:path*'],
-}
+  matcher: ["/admin/:path*"],
+};

@@ -25,12 +25,83 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-main div {
-  max-width: 800px ;
-  margin : 0 auto ;
-  padding : 10px ;
+main div:not(.login *) {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 10px;
 }
 
 .test {
   color: red;
+}
+
+/* ===== Admin Login ===== */
+.login {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.login > div {
+  width: 100%;
+  max-width: 360px;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.login h1 {
+  margin: 0 0 1.5rem;
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+.login form > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.login label {
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.login input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc !important;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.login input:focus {
+  outline: none;
+  border-color: #555;
+}
+
+.login p {
+  margin: 0 0 1rem;
+  color: #c00;
+  font-size: 0.875rem;
+}
+
+.login button {
+  width: 100%;
+  padding: 0.625rem;
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.login button:hover {
+  background: #444;
 }
