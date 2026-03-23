@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server" // インポート、外部から取り込む
 
-export default async function Home() {                // 「Home」という名前の非同期関数をデフォルトでエクスポート
+export default async function Home() {  // 「Home」という名前の非同期関数をデフォルトでエクスポート
   const supabase = await createClient()
 
   const { data: products, error } = await supabase
@@ -32,7 +32,6 @@ export default async function Home() {                // 「Home」という名�
 }
 
 /*
-
 ■ products?.map((product) => 　とは
 配列（products）の 各要素 を（product）として取り出す。
 （空になるまでループ）
@@ -41,5 +40,4 @@ export default async function Home() {                // 「Home」という名�
 こんなん → { id:1, name:"商品A", ...}
 
 product.name　→　オブジェクト（product）のプロパティ（name）
-
 */
