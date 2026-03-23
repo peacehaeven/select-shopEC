@@ -1,23 +1,44 @@
 "use client";
 import React, {useState} from 'react';
-import React from 'react';
+import { useRouter } from "next/navigation";
 import Link from 'next/link';
 
-interface Product {
-    id:string;
-    name:string;
-    price: number;
-    stock: number;
-    is_featured: boolean;
-    image_url:string | null;
-    created_at: string;
-}
-
-export default async function CartPage() {
-    // 商品の数（カートに入れるときの数）初期値は１で設定
+export default function CartPage() {
+  const router = useRouter();
+  
+    // 1.商品の数（カートに入れるときの数）初期値は１で設定
     const [quantity, setQuantity] = useState(1);
-    // 計算ロジック
-    const total = price * quantity;
+
+    // 2.計算ロジック
+    // 税率計算
+    const tax = 0.1;
+    //　商品価格×数量
+    const basePrice = price * quantity;
+    // 税金（商品の合計額×税率）
+    const taxAmount = Math.floor(basePrice * tax);
+    // 商品の合計額　+　税金
+    const subtotal = basePrice + taxAmount;
+    // 送料　一律８００円
+    const shipping = 800;
+    // 商品の合計金額（税込み）+送料
+    const total = subtotal + shipping;
+
+
+    // 3. 注文ボタンを押した時の処理
+    const handleOrder = (e: React.MouseEvent) => {
+        // デフォルトのリンク遷移（href="/login"）を一旦止める場合
+        e.preventDefault(); 
+
+        const confirmed = window.confirm("本当に注文を確定しますか？");
+        if (confirmed) {
+            alert("注文を受け付けました！");
+            // ここで本来はfetch('/api/order', { method: 'POST', ... }) などのDB保存処理DB保存などの処理へ飛ばします
+            router.push('/cart/success');
+          } else {
+            // キャンセルされた場合は何もしない（または遷移を阻止）
+            e.preventDefault();
+        }
+    };
 
   return (
     <main>
@@ -33,8 +54,7 @@ export default async function CartPage() {
                   <th>商品</th>
                   <th>単価</th>
                   <th>数量</th>
-                  <th>小計</th>
-                  <th></th>
+                  <th>小計(税込)</th>
                 </tr>
               </thead>
               <tbody>
@@ -93,8 +113,12 @@ export default async function CartPage() {
           <div className="summary-row"><span>送料</span><span>¥800</span></div>
           <div className="summary-total"><span>合計</span><span>¥13,760</span></div>
           <br />
-          <Link href="/login" className="btn btn-primary" style={{ display: 'block', textAlign: 'center' }}>
-            ログインして注文を確定する
+          <Link href="#" 
+                onClick={handleOrder}
+                className="btn btn-primary" 
+                style={{ display: 'block', textAlign: 'center' }}
+          >
+            注文する
           </Link>
         </div>
       </div>
