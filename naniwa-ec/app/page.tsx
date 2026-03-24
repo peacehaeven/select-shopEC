@@ -1,4 +1,4 @@
-// "use client";
+"use client";
 import Link from 'next/link';
 import styles from './page.module.css'; 
 
@@ -21,56 +21,92 @@ const products: Product[] = [
   { id: 8, name: "まいど！ミックスジュースゼリー", price: 2800, feature: "喫茶店の味を再現した濃厚果肉" },
   { id: 9, name: "串カツだるまインスパイアセット", price: 5500, feature: "卓上フライヤー対応・冷凍30本入" },
 ];
- import { createClient } from "@/lib/supabase/server" // インポート、外部から取り込む
 
-export default async function Home() {                // 「Home」という名前の非同期関数をデフォルトでエクスポート
-   const supabase = await createClient()
+export default function HomePage() {
+  const recommendedProducts = products.filter(p => p.isRecommended).slice(0, 3);
 
-   const { data: products, error } = await supabase
-     .from("products")
-     .select("*")
-     .order("created_at")
+  return (
+    <main className={styles.container}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>まいど！なにわセレクトショップ</h1>
+        <p>大阪のええもん、揃うてます。</p>
+      </header>
 
-  if (error) {
-    return (
-      <>
-        <div>エラーが発生しました: {error.message}</div>
-        <div>サンプルです。</div>
-      </>
-    )
-  } else {
-    return (
-      // classではなく、styles.test のように指定します
-    <main className={styles.test}> 
-        <h1 className={styles.title}>なにわセレクトショップ</h1>
-
+      <section>
+        <h2 style={{ marginBottom: '1.5rem', fontWeight: 'bold' }}>-全商品リスト-</h2>
         <div className={styles.grid}>
-            {products.map((product) => (
-                <div key={product.id} className={styles.card}>
-                    <strong>{product.name}</strong>
-                    {product.isRecommended && <span className={styles.badge}>★おすすめ</span>}
-                    <p className={styles.feature}>{product.feature}</p>
-                    <p>¥{product.price} / 在庫:{product.stock}個</p>
-                    <div className={styles.actionArea}>
-                                <button className={styles.cartButton}>
-                                    カートに追加
-                                </button>
-                            </div>
-                </div>
-            ))}
+          {products.map(product => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
+      </section>
+      <section className={styles.userGuide}>
+        <div className={styles.guideHeader}>
+          <h2 className={styles.guideTitle}>ご利用案内</h2>
+          <p className={styles.guideSubTitle}>User Guide</p>
+        </div>
+
+        <div className={styles.guideSection}>
+          <div className={styles.sectionTitleBox}>
+            <span>送料・配送について</span>
+            <span className={styles.arrow}></span>
+          </div>
+          <div className={styles.sectionContent}>
+            <p>一律￥800</p>
+            <p>※地域や交通事情により、お届け日が前後する場合がございます。</p>
+            <p>※ご注文から3営業日以内に発送いたします（土日祝を除く）</p>
+          </div>
+        </div>
+
+        {/* お支払いについても枠だけ作っておく場合 */}
+        <div className={styles.guideSection}>
+          <div className={styles.sectionTitleBox}>
+            <span>お支払いについて</span>
+            <span className={styles.arrow}>{'>'}</span>
+          </div>
+          <div className={styles.sectionContent}>
+            <p>お支払いは、クレジットカード決済のみ対応しております。</p>
+          </div>
+          {/* キャンセルポリシーの追加 */}
+        <div className={styles.guideSection}>
+          <div className={styles.sectionTitleBox}>
+            <span>キャンセル・返品</span>
+            <span className={styles.arrow}>{'>'}</span>
+          </div>
+          <div className={styles.sectionContent}>
+            <p>お電話かメールで連絡をお願いいたします。
+              ☎〇〇-〇〇〇〇-〇〇〇〇
+            </p>
+            <p></p>
+          </div>
+        </div>
+        </div>
+      </section>
     </main>
-);
+  );
 }
-/* ← ここで眠らせる開始
-■ products?.map((product) => ▢とは
-配列（products）の各要素を（product）として取り出す。
-（空になるまでループ）
 
-また、今回取り出した（product）はオブジェクトです。
-こんなん → { id:1, name:"商品A", ... }
+function ProductCard({ product }: { product: Product }) {
+  // カートボタンを押した時の動き
+  const handleAddToCart = () => {
+    alert(`${product.name} をカートに入れました！🛒`);
+  };
 
-product.name ▢→▢ オブジェクト（product）のプロパティ（name）
-*/
-
+  return (
+    <div className={styles.card}>
+      {/* 1. Linkを削除して、cardContentというdivで囲むように変更 */}
+      <div className={styles.cardContent}>
+        <h3 className={styles.productName}>{product.name}</h3>
+        <p className={styles.price}>{product.price.toLocaleString()}円 (税込)</p>
+        <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '1rem' }}>
+          {product.feature}
+        </p>
+      </div>
+      
+      {/* カートに入れるボタンを追加 */}
+      <button onClick={handleAddToCart} className={styles.cartButton}>
+        カートに入れる
+      </button>
+    </div>
+  );
 }
