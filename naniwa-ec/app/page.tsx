@@ -53,8 +53,8 @@ export default function HomePage() {
           </div>
           <div className={styles.sectionContent}>
             <p>一律￥800</p>
-            <p>※地域や交通事情により、お届け日が前後する場合がございます。</p>
             <p>※ご注文から3営業日以内に発送いたします（土日祝を除く）</p>
+             <p>※地域や交通事情により、お届け日が前後する場合がございます。</p>
           </div>
         </div>
 
