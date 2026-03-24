@@ -3,68 +3,58 @@
 import React from "react";
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import "./success.css"; // CSSファイルをインポート
 
 export default function OrderSuccessPage() {
-  // 仮の注文ID（本来はURLやStateから取得）
   const searchParams = useSearchParams();
-  const orderId = SearchParams.get(orderId ||"読み込み中");
+  const orderNumber = searchParams.get("orderNumber") || searchParams.get("orderId") || "読み込み中";
 
   return (
     <main>
-      <div style={{ maxWidth: '600px', margin: '80px auto', padding: '0 20px' }}>
-        <div className="card" style={{ textAlign: 'center', padding: '60px 40px' }}>
-          {/* アイコン */}
-          <div style={{ fontSize: '56px', marginBottom: '24px' }}>✅</div>
+      <div className="success-container">
+        <div className="card success-card"> {/* globals.cssのcardと success-cardを併用 */}
+          <div className="success-icon">✅</div>
           
-          {/* メインタイトル */}
-          <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '16px' }}>
-            ご注文ありがとうございます
-          </h2>
+          <h2 className="success-title">ご注文ありがとうございました</h2>
           
-          {/* 注文番号 */}
-          <p style={{ fontSize: '14px', color: '#666', marginBottom: '32px' }}>
-            注文番号：<span style={{ fontWeight: '500', color: '#333' }}>#{orderId}</span>
-          </p>
-          
-          <hr style={{ border: 'none', borderTop: '1px solid #eee', marginBottom: '32px' }} />
-
-          {/* メッセージ */}
-          <p style={{ marginBottom: '24px', color: '#333', lineHeight: '1.8' }}>
-            ご注文を受け付けました。<br />
-            これより発送の準備に入らせていただきます。
-          </p>
-
-          {/* 重要なお知らせ（強調ボックス） */}
-          <div style={{ 
-            backgroundColor: '#fff9db', // 柔らかな黄色
-            border: '1px solid #ffec99',
-            color: '#856404', // 濃い茶色（読みやすさ重視）
-            padding: '16px',
-            borderRadius: '8px',
-            fontSize: '14px',
-            marginBottom: '40px',
-            lineHeight: '1.6'
-          }}>
-            <strong>発送通知について</strong><br />
-            発送が完了しましたら、ご登録のメールアドレス宛に<br />
-            「発送通知メール」をお送りいたします。
+          <div className="order-number-box">
+            <p className="order-number-label">お問い合わせ用・注文番号</p>
+            <p className="order-number-value">#{orderNumber}</p>
+            <p className="order-number-note">
+              ⚠️ キャンセル・お問い合わせの際に必要です。<br/>
+              メモまたは保存をお願いします。
+            </p>
           </div>
 
-          {/* アクションボタン */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
-            <Link 
-              href="/" 
-              className="btn btn-primary" 
-              style={{ width: '100%', maxWidth: '280px', textAlign: 'center', textDecoration: 'none' }}
-            >
-              トップページに戻る
-            </Link>
+          <div className="success-message">
+            <p>ご注文を受け付けました。</p>
             
-            <Link 
-              href="/mypage" 
-              style={{ fontSize: '14px', color: '#666', marginTop: '8px', textDecoration: 'underline' }}
-            >
-              注文履歴を確認する
+            <div className="message-section">
+              <strong>【重要】</strong><br />
+              <strong>自動返信の「注文完了メール」はお送りしておりません。</strong><br />
+              発送の手配が整い次第、別途メールにてご連絡差し上げます。
+            </div>
+
+            <div className="message-section">
+              <h3>【発送について】</h3>
+              <p>商品は、ご注文日から<strong>土日祝日を除く3営業日以内</strong>に発送いたします。</p>
+              <p>発送が完了しましたら、改めてメールにてお知らせいたします。</p>
+              <h3>【ご注文のキャンセルについて】</h3>
+              <p><strong>発送準備に入る前（発送連絡のメールが届くまで）</strong>であれば承ることが可能です。</p>
+              <p>キャンセルをご希望の場合は、お早めに下記までご連絡をお願いいたします。</p>
+              <ul>
+                <li>電話：06-1515-1515</li>
+                <li>メール：naniwa15@example.com</li>
+              </ul>
+              <p>
+                ※発送完了後のキャンセルはお受けできかねますのでご了承ください。
+              </p>
+            </div>
+          </div>
+
+          <div className="action-area">
+            <Link href="/" className="btn btn-primary btn-full">
+              ショップトップへ戻る
             </Link>
           </div>
         </div>
