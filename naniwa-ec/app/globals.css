@@ -414,3 +414,33 @@ footer {
   padding-top: 20px;
   border-top: 1px solid var(--border);
 }
+
+/* ── ログイン画面 ── */
+.login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+.login > div {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+.login h1 {
+  font-size: 22px;
+  margin-bottom: 28px;
+  text-align: center;
+}
+.login .form-group { margin-bottom: 16px; }
+.login button.btn-primary {
+  margin-top: 8px;
+  padding: 12px;
+  font-size: 14px;
+}
+.login .error { color: #c00; font-size: 13px; margin-bottom: 12px; }
