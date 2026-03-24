@@ -149,9 +149,9 @@ footer{text-align:center;padding:20px;color:var(--dim);font-size:12px;border-top
     <p class="header-label">Database Design</p>
     <h1>なにわ<span>セレクト</span>ショップ DB 設計解説</h1>
     <div class="header-meta">
-      <span>📌 <b>v1.0</b></span>
+      <span>📌 <b>v1.2</b></span>
       <span>👥 <b>チームメンバー向け</b></span>
-      <span>📅 <b>2026年3月20日</b></span>
+      <span>📅 <b>2026年3月24日</b></span>
     </div>
   </div>
 </header>
@@ -170,6 +170,7 @@ footer{text-align:center;padding:20px;color:var(--dim);font-size:12px;border-top
       <a href="#s6"><span class="toc-n">06</span>RLS（アクセス制御）</a>
       <a href="#s7"><span class="toc-n">07</span>注文処理の流れ</a>
       <a href="#s8"><span class="toc-n">08</span>発送処理の流れ</a>
+      <a href="#s8b"><span class="toc-n">08b</span>キャンセル処理の流れ</a>
       <a href="#s9"><span class="toc-n">09</span>将来の機能拡張</a>
       <a href="#s10"><span class="toc-n">10</span>よくあるエラー</a>
     </div>
@@ -356,10 +357,11 @@ footer{text-align:center;padding:20px;color:var(--dim);font-size:12px;border-top
         <div class="tc-hd"><span class="tc-name">products</span><span class="tag tg">✅ 使用中</span></div>
         <div class="tc-row"><span class="tc-col">id</span><span class="tc-type">UUID</span><span class="tc-desc">PK</span></div>
         <div class="tc-row"><span class="tc-col">name</span><span class="tc-type">TEXT</span><span class="tc-desc">商品名</span></div>
-        <div class="tc-row"><span class="tc-col">price</span><span class="tc-type">INTEGER</span><span class="tc-desc">税込価格（円）</span></div>
+        <div class="tc-row"><span class="tc-col">price</span><span class="tc-type">INTEGER</span><span class="tc-desc">税抜価格（円）。顧客向け表示時は税込換算すること</span></div>
         <div class="tc-row"><span class="tc-col">stock</span><span class="tc-type">INTEGER</span><span class="tc-desc">在庫数（注文時に自動減算）</span></div>
         <div class="tc-row"><span class="tc-col">is_featured</span><span class="tc-type">BOOLEAN</span><span class="tc-desc">おすすめフラグ</span></div>
         <div class="tc-row" style="background:#F2EDFB"><span class="tc-col" style="color:var(--purple)">image_url</span><span class="tc-type" style="color:var(--purple)">TEXT</span><span class="tc-desc" style="color:var(--purple)">将来の画像機能用</span></div>
+        <div class="tc-row" style="background:var(--accent-bg)"><span class="tc-col" style="color:var(--accent)">deleted_at</span><span class="tc-type" style="color:var(--accent)">TIMESTAMPTZ</span><span class="tc-desc" style="color:var(--accent)">論理削除用。NULL=有効、値あり=削除済み</span></div>
       </div>
       <div class="tc" style="grid-column:span 2">
         <div class="tc-hd"><span class="tc-name">orders</span><span class="tag tg">✅ 使用中</span></div>
@@ -369,7 +371,7 @@ footer{text-align:center;padding:20px;color:var(--dim);font-size:12px;border-top
             <div class="tc-row"><span class="tc-col">user_id</span><span class="tc-type">UUID</span><span class="tc-desc">FK, NULL許容（現在常にNULL）</span></div>
             <div class="tc-row"><span class="tc-col">guest_email</span><span class="tc-type">TEXT</span><span class="tc-desc">発送通知の送信先</span></div>
             <div class="tc-row"><span class="tc-col">order_number</span><span class="tc-type">TEXT</span><span class="tc-desc">自動採番 YYYYMMDD-0001</span></div>
-            <div class="tc-row"><span class="tc-col">status</span><span class="tc-type">TEXT</span><span class="tc-desc">pending / shipped</span></div>
+            <div class="tc-row"><span class="tc-col">status</span><span class="tc-type">TEXT</span><span class="tc-desc">pending / shipped / cancelled</span></div>
             <div class="tc-row"><span class="tc-col">shipping_*</span><span class="tc-type">TEXT</span><span class="tc-desc">配送先（氏名・住所等）</span></div>
             <div class="tc-row"><span class="tc-col">subtotal/total</span><span class="tc-type">INTEGER</span><span class="tc-desc">小計・合計（円）</span></div>
             <div class="tc-row"><span class="tc-col">shipping_fee</span><span class="tc-type">INTEGER</span><span class="tc-desc">送料（固定800円）</span></div>
@@ -511,9 +513,10 @@ footer{text-align:center;padding:20px;color:var(--dim);font-size:12px;border-top
         </div>
         <div class="card">
           <div class="card-ttl">フロントからの呼び出し方</div>
+<p style="font-size:13px;color:var(--muted);margin-bottom:8px">ゲスト注文処理（<code style="background:var(--code-bg);padding:1px 5px;border-radius:3px">place_guest_order</code>）</p>
 <pre><span class="kw">const</span> { data } = <span class="kw">await</span> supabase
   .rpc(<span class="st">'place_guest_order'</span>, {
-    p_guest_email: <span class="st">'user@example.com'</span>,
+    p_guest_email: <span class="st">'<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="add8dec8dfedc8d5ccc0ddc1c883cec2c0">[email&#160;protected]</a>'</span>,
     p_shipping_name: <span class="st">'山田 太郎'</span>,
     <span class="cm">// 住所・電話番号...</span>
     p_cart_items: [
@@ -546,7 +549,7 @@ footer{text-align:center;padding:20px;color:var(--dim);font-size:12px;border-top
     <div class="card">
       <div class="card-ttl">コード例（API Route 内）</div>
 <pre><span class="cm">// app/api/ship/route.ts</span>
-<span class="kw">import</span> { Resend } <span class="kw">from</span> <span class="st">'resend'</span>; <span class="cm">// resend@6.9.4</span>
+<span class="kw">import</span> { Resend } <span class="kw">from</span> <span class="st">'resend'</span>; <span class="cm">// <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3c4e594f5952587c0a12051208">[email&#160;protected]</a></span>
 
 <span class="cm">// ① DB を更新</span>
 <span class="kw">await</span> supabase.from(<span class="st">'orders'</span>).update({
@@ -556,12 +559,67 @@ footer{text-align:center;padding:20px;color:var(--dim);font-size:12px;border-top
 <span class="cm">// ② メールを送信</span>
 <span class="kw">const</span> resend = <span class="kw">new</span> Resend(process.env.RESEND_API_KEY);
 <span class="kw">await</span> resend.emails.send({
-  from: <span class="st">'shop@yourdomain.com'</span>,
+  from: <span class="st">'<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="53203b3c23132a3c2621373c3e323a3d7d303c3e">[email&#160;protected]</a>'</span>,
   to:   guestEmail,
   subject: <span class="st">'【なにわセレクトショップ】発送のご案内'</span>,
   html: <span class="cm">/* テンプレートHTML */</span>,
 });</pre>
       <div class="co co-w" style="margin-top:10px;margin-bottom:0"><span class="co-icon">⚠️</span><div>Resend の API キーは <code>.env.local</code> に保存してください。ソースコードに直接書いたりGitにコミットしたりしないでください。</div></div>
+    </div>
+  </section>
+
+
+
+  <!-- 08b キャンセル処理 -->
+  <section class="sec" id="s8b">
+    <div class="sec-hd"><span class="sec-n">08b</span><h2>キャンセル処理の流れ</h2></div>
+
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-ttl">全体の流れ</div>
+      <div style="display:flex;align-items:flex-start;gap:0;flex-wrap:wrap;row-gap:12px">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:10px 14px;font-size:13px;min-width:140px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">管理者の操作</div><b>「キャンセルする」<br>ボタンをクリック</b></div>
+        <div style="padding:0 10px;font-size:18px;color:var(--gold);align-self:center">→</div>
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:10px 14px;font-size:13px;min-width:160px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">確認モーダルが開く</div><div style="color:var(--muted);font-size:12px;line-height:1.8">「この操作は取り消せません」<br>「在庫が自動で戻ります」</div></div>
+        <div style="padding:0 10px;font-size:18px;color:var(--gold);align-self:center">→</div>
+        <div style="flex:1;min-width:190px;display:flex;flex-direction:column;gap:8px">
+          <div style="background:var(--blue-bg);border-radius:5px;padding:10px 12px;font-size:12px"><b style="color:var(--blue);display:block;margin-bottom:3px">① cancel_order() DB関数を呼び出す</b><code style="font-size:11px">status = 'cancelled' に UPDATE</code><br><code style="font-size:11px">在庫を注文数分だけ加算（戻す）</code></div>
+          <div style="background:var(--code-bg);border-radius:5px;padding:10px 12px;font-size:12px"><b style="display:block;margin-bottom:3px">② 画面を更新</b><span style="color:var(--muted)">カードが「キャンセル済み」表示に切り替わる<br>ステータス変更ボタンが非表示になる</span></div>
+        </div>
+      </div>
+      <div class="co co-w" style="margin-top:12px;margin-bottom:0"><span class="co-icon">⚠️</span><div>キャンセルできるのは <code>pending</code>（発送前）の注文のみです。<code>shipped</code> の注文はキャンセル不可です。</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-ttl">cancel_order() 関数の仕組み</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px">DB関数をトランザクション内で実行することで、ステータス更新と在庫戻しを一体として処理します。</p>
+<pre><span class="cm">-- SQL_3 / SQL_4 で登録済みの DB 関数</span>
+<span class="kw">CREATE OR REPLACE FUNCTION</span> <span class="fn">cancel_order</span>(p_order_id UUID)
+<span class="kw">RETURNS</span> VOID <span class="kw">AS</span> $$
+<span class="kw">BEGIN</span>
+  <span class="cm">-- pending 以外はエラー</span>
+  <span class="kw">IF</span> status &lt;&gt; <span class="st">'pending'</span> <span class="kw">THEN</span>
+    RAISE EXCEPTION <span class="st">'発送前の注文のみキャンセルできます'</span>;
+  <span class="kw">END IF</span>;
+
+  <span class="cm">-- ① ステータスを cancelled に更新</span>
+  <span class="kw">UPDATE</span> orders <span class="kw">SET</span> status = <span class="st">'cancelled'</span>
+    <span class="kw">WHERE</span> id = p_order_id;
+
+  <span class="cm">-- ② 在庫を注文数分だけ戻す</span>
+  <span class="kw">UPDATE</span> products <span class="kw">SET</span> stock = stock + oi.quantity
+    <span class="kw">FROM</span> order_items oi
+    <span class="kw">WHERE</span> products.id = oi.product_id
+      <span class="kw">AND</span> oi.order_id = p_order_id;
+<span class="kw">END</span>;
+$$ LANGUAGE plpgsql SECURITY DEFINER;</pre>
+
+      <div style="margin-top:12px">
+        <div class="card-ttl">フロントからの呼び出し方（Server Action）</div>
+<pre><span class="cm">// app/admin/orders/actions.ts</span>
+<span class="kw">await</span> supabase.rpc(<span class="st">'cancel_order'</span>, {
+  p_order_id: orderId,
+});</pre>
+      </div>
     </div>
   </section>
 
@@ -610,15 +668,4 @@ footer{text-align:center;padding:20px;color:var(--dim);font-size:12px;border-top
           <tr><td><code style="color:var(--accent);font-size:11px">relation "profiles" does not exist</code></td><td style="color:var(--muted)">SQL_1を実行していない</td><td style="color:var(--muted)">SQL_1→SQL_2→SQL_3の順で実行</td></tr>
           <tr><td><code style="color:var(--accent);font-size:11px">permission denied（発送モーダル）</code></td><td style="color:var(--muted)">is_admin()がfalseを返している</td><td style="color:var(--muted)">profilesのroleが'admin'か確認</td></tr>
           <tr><td><code style="color:var(--accent);font-size:11px">メール送信に失敗しました</code></td><td style="color:var(--muted)">ResendのAPIキーが未設定</td><td style="color:var(--muted)">.env.localのRESEND_API_KEYを確認</td></tr>
-          <tr><td><code style="color:var(--accent);font-size:11px">メールが届かない</code></td><td style="color:var(--muted)">迷惑メール判定など</td><td style="color:var(--muted)">Resend Dashboardの送信ログを確認</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-</div>
-
-<footer>なにわセレクトショップ ECシステム ／ DB設計解説 v1.0 ／ いちごチーム ／ 2026年3月20日</footer>
-
-</body>
-</html>
+          <tr><td><code style="color:var(--accent);font-size:11px">メールが届かない</code></td><td style="color:

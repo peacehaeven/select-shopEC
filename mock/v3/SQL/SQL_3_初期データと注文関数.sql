@@ -138,3 +138,51 @@ BEGIN
   RETURN v_order_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-- ■ キャンセル処理関数
+--   注文ステータスを 'cancelled' に更新し、在庫を注文数分だけ戻す。
+--   pending 以外の注文はキャンセル不可（エラーを返す）。
+--
+--   処理の流れ:
+--     1. 注文が pending かチェック
+--     2. orders.status を 'cancelled' に UPDATE
+--     3. 注文明細の数量分だけ products.stock を加算
+--
+--   ※ plpgsql 関数内は 1 トランザクションで実行される。
+--     途中でエラーが発生した場合は全処理がロールバックされる。
+--
+--   SECURITY DEFINER: RLS を回避して処理する必要があるため必須。削除・変更しないこと。
+CREATE OR REPLACE FUNCTION cancel_order(
+  p_order_id UUID
+)
+RETURNS VOID AS $$
+DECLARE
+  v_status TEXT;
+BEGIN
+  -- 1. 注文が pending かチェック
+  SELECT status INTO v_status
+    FROM orders
+    WHERE id = p_order_id;
+
+  IF v_status IS NULL THEN
+    RAISE EXCEPTION '注文が見つかりませんでした';
+  END IF;
+
+  IF v_status <> 'pending' THEN
+    RAISE EXCEPTION '発送前（pending）の注文のみキャンセルできます（現在のステータス: %）', v_status;
+  END IF;
+
+  -- 2. 注文ステータスを 'cancelled' に更新
+  UPDATE orders
+    SET status = 'cancelled'
+    WHERE id = p_order_id;
+
+  -- 3. 在庫を注文数分だけ戻す
+  UPDATE products
+    SET stock = stock + oi.quantity
+    FROM order_items oi
+    WHERE products.id = oi.product_id
+      AND oi.order_id = p_order_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

@@ -1,10 +1,9 @@
 -- ============================================================
--- 【1回目】テーブル作成 + トリガー（v2_C：論理削除・価格税抜対応版）
+-- 【1回目】テーブル作成 + トリガー（v2_D：キャンセル機能追加版）
 -- SQL Editor に貼り付けて「Run」を押してください
 -- ============================================================
--- v2_B からの変更点:
---   products テーブルに deleted_at（論理削除用）を追加
---   price の説明を税抜価格に変更
+-- v2_C からの変更点:
+--   orders.status の CHECK 制約に 'cancelled' を追加
 
 
 -- ■ profiles: 管理者プロフィール（auth.users と 1:1）
@@ -84,7 +83,7 @@ CREATE TABLE orders (
                                    ),
   order_number         TEXT        NOT NULL UNIQUE,   -- トリガーが自動採番（例: 20260320-0001）
   status               TEXT        NOT NULL DEFAULT 'pending'
-                                   CHECK (status IN ('pending', 'shipped')),
+                                   CHECK (status IN ('pending', 'shipped', 'cancelled')),
   shipping_name        TEXT        NOT NULL,
   shipping_postal_code TEXT        NOT NULL,
   shipping_address     TEXT        NOT NULL,

@@ -1,159 +1,201 @@
-import { createClient } from "@/lib/supabase/server"
+"use client"
+import { useEffect, useState } from "react"
+import { createClient } from "@/lib/supabase/client"
+// import { cancelOrder } from "./actions"　あとで
 
-export default async function Home() {
-    const supabase = await createClient()
+type OrderItem = {
+  product_name: string
+  unit_price: number
+  quantity: number
+}
 
-    const { data: products, error } = await supabase
-        .from("products")
-        .select("*")
-        .order("created_at")
-    return (
-        <main>
-            <div className="admin-tabs">
-                <a href="orders.html" className="active">注文管理</a>
-                <a href="products.html">商品管理</a>
-            </div>
+type Order = {
+  id: string
+  order_number: string
+  created_at: string
+  status: "pending" | "shipped" | "cancelled"
+  guest_email: string
+  shipping_name: string
+  shipping_postal_code: string
+  shipping_address: string
+  shipping_phone: string
+  subtotal: number
+  shipping_fee: number
+  total: number
+  carrier: string | null
+  tracking_number: string | null
+  order_items: OrderItem[]
+}
 
+const CARRIERS = ["ヤマト運輸", "佐川急便", "ゆうパック", "その他"]
+
+export default function OrdersPage() {
+  const supabase = createClient()
+
+  const [orders, setOrders] = useState<Order[]>([])
+  const [shipSelectOrder, setShipSelectOrder] = useState<Order | null>(null)
+  const [carrier, setCarrier] = useState(CARRIERS[0])
+  const [trackingNumber, setTrackingNumber] = useState("")
+  const [cancelSelectOrder, setCancelSelectOrder] = useState<Order | null>(null)
+
+  const fetchOrders = async () => {
+    const { data } = await supabase
+      .from("orders")
+      .select(`
+        id, order_number, created_at, status,
+        guest_email,
+        shipping_name, shipping_postal_code, shipping_address, shipping_phone,
+        subtotal, shipping_fee, total,
+        carrier, tracking_number,
+        order_items ( product_name, unit_price, quantity )
+      `)
+      .order("created_at", { ascending: false })
+
+    if (data) {
+      setOrders(data as Order[])
+    }
+  }
+
+  useEffect(() => {
+    fetchOrders()
+  }, [])
+
+  const openShipSelect = (order: Order) => {
+    setShipSelectOrder(order)
+    setCarrier(CARRIERS[0])
+    setTrackingNumber("")
+  }
+
+  const handleShip = async () => {
+    if (!trackingNumber) {
+      alert("追跡番号を入力してください。")
+      return
+    }
+    if (!shipSelectOrder) {
+      return
+    }
+
+    const res = await fetch("/api/ship", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        orderId: shipSelectOrder.id,
+        carrier: carrier,
+        trackingNumber: trackingNumber,
+      }),
+    })
+
+    if (res.ok) {
+      setShipSelectOrder(null)
+      fetchOrders()
+    }
+  }
+
+  const handleCancel = async () => {
+    if (!cancelSelectOrder) {
+      return
+    }
+    // await cancelOrder(cancelSelectOrder.id)
+    setCancelSelectOrder(null)
+    fetchOrders()
+  }
+
+  return (
+    <main>
+
+      <h2>注文一覧</h2>
+
+      {orders.map((order) => (
+        <div key={order.id}>
+
+          {/* 注文番号・日付・ステータス・合計 */}
+          <p>
+            #{order.order_number}　
+            {new Date(order.created_at).toLocaleDateString("ja-JP")}　
+            {order.status === "pending" && <span>注文受付済み</span>}
+            {order.status === "shipped" && <span>発送済み</span>}
+            {order.status === "cancelled" && <span>キャンセル済み</span>}
+            　¥{order.total.toLocaleString()}
+          </p>
+
+          {/* 注文者・配送先 */}
+          <p>お名前：{order.shipping_name}</p>
+          <p>メール：{order.guest_email}</p>
+          <p>電話番号：{order.shipping_phone}</p>
+          <p>住所：〒{order.shipping_postal_code} {order.shipping_address}</p>
+
+          {/* 注文商品 */}
+          {order.order_items.map((item, i) => (
+            <p key={i}>
+              {item.product_name}　¥{item.unit_price.toLocaleString()} × {item.quantity}
+            </p>
+          ))}
+
+          {/* 金額明細 */}
+          <p>小計：¥{order.subtotal.toLocaleString()}</p>
+          <p>送料：¥{order.shipping_fee.toLocaleString()}</p>
+          <p>合計：¥{order.total.toLocaleString()}</p>
+
+          {/* ボタン：pending のときだけ表示 */}
+          {order.status === "pending" && (
             <div>
-                <h2 className="section-title">注文一覧</h2>
-                <div className="order-list">
-
-                    {/* 未発送 */}
-                    <div className="order-card is-pending">
-                        <div className="order-card-header">
-                            <div className="order-header-left">
-                                <span className="order-number">#20250601-0042</span>
-                                <span className="order-date">2025年6月1日</span>
-                                <span className="status status-new">注文受付済み</span>
-                            </div>
-                            <span className="order-total">¥9,440</span>
-                        </div>
-
-                        <div className="order-card-body">
-                            <div className="order-section">
-                                <p className="order-section-title">注文者 / 配送先</p>
-                                <div className="order-info-row">
-                                    <span className="order-info-label">お名前</span>
-                                    <span className="order-info-value">山田 太郎</span>
-                                </div>
-                                <div className="order-info-row">
-                                    <span className="order-info-label">メール</span>
-                                    <span className="order-info-value">yamada@example.com</span>
-                                </div>
-                                <div className="order-info-row">
-                                    <span className="order-info-label">電話番号</span>
-                                    <span className="order-info-value">090-1234-5678</span>
-                                </div>
-                                <div className="order-info-row">
-                                    <span className="order-info-label">住所</span>
-                                    <span className="order-info-value">〒530-0001　大阪府大阪市北区梅田1-1-1</span>
-                                </div>
-                            </div>
-
-                            <div className="order-section">
-                                <p className="order-section-title">注文商品</p>
-                                <ul className="item-list">
-                                    <li>
-                                        <span className="item-name">なにわ黒毛和牛 すき焼きセット</span>
-                                        <span className="item-meta">¥8,640 × 1</span>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div className="order-section">
-                                <p className="order-section-title">金額</p>
-                                <div className="order-info-row">
-                                    <span className="order-info-label">小計</span>
-                                    <span className="order-info-value">¥8,640</span>
-                                </div>
-                                <div className="order-info-row">
-                                    <span className="order-info-label">送料</span>
-                                    <span className="order-info-value">¥800</span>
-                                </div>
-                                <div className="order-info-row order-info-row-total">
-                                    <span className="order-info-label fw-bold">合計</span>
-                                    <span className="order-info-value fw-bold">¥9,440</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="order-card-footer">
-                            <span className="tracking-info">追跡番号：未登録</span>
-                            <button className="btn btn-success btn-ship">
-                                発送済みにする
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* 発送済み */}
-                    <div className="order-card is-shipped">
-                        <div className="order-card-header">
-                            <div className="order-header-left">
-                                <span className="order-number">#20250531-0041</span>
-                                <span className="order-date">2025年5月31日</span>
-                                <span className="status status-shipped">発送済み</span>
-                            </div>
-                            <span className="order-total">¥3,500</span>
-                        </div>
-
-                        <div className="order-card-body">
-                            <div className="order-section">
-                                <p className="order-section-title">注文者 / 配送先</p>
-                                <div className="order-info-row">
-                                    <span className="order-info-label">お名前</span>
-                                    <span className="order-info-value">鈴木 花子</span>
-                                </div>
-                                <div className="order-info-row">
-                                    <span className="order-info-label">メール</span>
-                                    <span className="order-info-value">suzuki@example.com</span>
-                                </div>
-                                <div className="order-info-row">
-                                    <span className="order-info-label">電話番号</span>
-                                    <span className="order-info-value">080-9876-5432</span>
-                                </div>
-                                <div className="order-info-row">
-                                    <span className="order-info-label">住所</span>
-                                    <span className="order-info-value">〒542-0012　大阪府大阪市中央区谷町2-2-2</span>
-                                </div>
-                            </div>
-
-                            <div className="order-section">
-                                <p className="order-section-title">注文商品</p>
-                                <ul className="item-list">
-                                    <li>
-                                        <span className="item-name">泉州水茄子 浅漬けセット</span>
-                                        <span className="item-meta">¥2,700 × 1</span>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div className="order-section">
-                                <p className="order-section-title">金額</p>
-                                <div className="order-info-row">
-                                    <span className="order-info-label">小計</span>
-                                    <span className="order-info-value">¥2,700</span>
-                                </div>
-                                <div className="order-info-row">
-                                    <span className="order-info-label">送料</span>
-                                    <span className="order-info-value">¥800</span>
-                                </div>
-                                <div className="order-info-row order-info-row-total">
-                                    <span className="order-info-label fw-bold">合計</span>
-                                    <span className="order-info-value fw-bold">¥3,500</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="order-card-footer">
-                            <span className="tracking-info">
-                                ヤマト運輸　追跡番号：1234-5678-9012
-                            </span>
-                            <span className="shipped-note">発送済みのため変更不可</span>
-                        </div>
-                    </div>
-
-                </div>
+              <button onClick={() => setCancelSelectOrder(order)}>キャンセルする</button>
+              <button onClick={() => openShipSelect(order)}>発送済みにする</button>
             </div>
-        </main>
-    )
+          )}
+
+          {/* 追跡番号：shipped のときだけ表示 */}
+          {order.status === "shipped" && (
+            <p>{order.carrier}　追跡番号：{order.tracking_number}</p>
+          )}
+
+          <hr />
+        </div>
+      ))}
+
+
+      {/* 発送情報入力モーダル */}
+      {shipSelectOrder !== null && (
+        <div>
+          <h3>発送情報の入力</h3>
+          <p>#{shipSelectOrder.order_number}　{shipSelectOrder.shipping_name} 様</p>
+
+          <div>
+            <label>配送業者</label>
+            <select value={carrier} onChange={(e) => setCarrier(e.target.value)}>
+              {CARRIERS.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label>追跡番号</label>
+            <input
+              value={trackingNumber}
+              onChange={(e) => setTrackingNumber(e.target.value)}
+              placeholder="1234-5678-9999"
+            />
+          </div>
+
+          <button onClick={() => setShipSelectOrder(null)}>キャンセル</button>
+          <button onClick={handleShip}>発送済みにする</button>
+        </div>
+      )}
+
+
+      {/* キャンセル確認モーダル */}
+      {cancelSelectOrder !== null && (
+        <div>
+          <h3>注文をキャンセル</h3>
+          <p>#{cancelSelectOrder.order_number}　{cancelSelectOrder.shipping_name} 様</p>
+          <p>※ キャンセル通知メールは送信されません。</p>
+
+          <button onClick={() => setCancelSelectOrder(null)}>戻る</button>
+          <button onClick={handleCancel}>キャンセルする</button>
+        </div>
+      )}
+
+    </main>
+  )
 }
