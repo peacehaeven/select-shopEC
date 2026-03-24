@@ -40,29 +40,37 @@ export default async function Home() {                // 「Home」という名�
     )
   } else {
     return (
-      <main>
-        <h1 className="test">接続テスト</h1>
+      // classではなく、styles.test のように指定します
+    <main className={styles.test}> 
+        <h1 className={styles.title}>なにわセレクトショップ</h1>
 
-        {products.map((product) => (
-          <div key={product.id}>
-            {product.name}{product.is_featured && ("★おすすめ")}<br />
-            ¥{product.price}／在庫:{product.stock}個
-          </div>
-        ))}
-      </main>
-    )
-  }
+        <div className={styles.grid}>
+            {products.map((product) => (
+                <div key={product.id} className={styles.card}>
+                    <strong>{product.name}</strong>
+                    {product.isRecommended && <span className={styles.badge}>★おすすめ</span>}
+                    <p className={styles.feature}>{product.feature}</p>
+                    <p>¥{product.price} / 在庫:{product.stock}個</p>
+                    <div className={styles.actionArea}>
+                                <button className={styles.cartButton}>
+                                    カートに追加
+                                </button>
+                            </div>
+                </div>
+            ))}
+        </div>
+    </main>
+);
 }
-
-/*
-
-■ products?.map((product) => 　とは
-配列（products）の 各要素 を（product）として取り出す。
+/* ← ここで眠らせる開始
+■ products?.map((product) => ▢とは
+配列（products）の各要素を（product）として取り出す。
 （空になるまでループ）
 
 また、今回取り出した（product）はオブジェクトです。
-こんなん → { id:1, name:"商品A", ...}
+こんなん → { id:1, name:"商品A", ... }
 
-product.name　→　オブジェクト（product）のプロパティ（name）
-
+product.name ▢→▢ オブジェクト（product）のプロパティ（name）
 */
+
+}
