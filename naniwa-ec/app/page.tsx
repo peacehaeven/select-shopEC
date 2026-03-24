@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import Link from 'next/link';
 import styles from './page.module.css'; 
 
@@ -21,15 +21,15 @@ const products: Product[] = [
   { id: 8, name: "まいど！ミックスジュースゼリー", price: 2800, feature: "喫茶店の味を再現した濃厚果肉" },
   { id: 9, name: "串カツだるまインスパイアセット", price: 5500, feature: "卓上フライヤー対応・冷凍30本入" },
 ];
-import { createClient } from "@/lib/supabase/server" // インポート、外部から取り込む
+ import { createClient } from "@/lib/supabase/server" // インポート、外部から取り込む
 
 export default async function Home() {                // 「Home」という名前の非同期関数をデフォルトでエクスポート
-  const supabase = await createClient()
+   const supabase = await createClient()
 
-  const { data: products, error } = await supabase
-    .from("products")
-    .select("*")
-    .order("created_at")
+   const { data: products, error } = await supabase
+     .from("products")
+     .select("*")
+     .order("created_at")
 
   if (error) {
     return (

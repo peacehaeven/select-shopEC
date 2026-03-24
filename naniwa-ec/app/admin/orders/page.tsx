@@ -146,7 +146,7 @@ export default async function Home() {
 
                         <div className="order-card-footer">
                             <span className="tracking-info">
-                                ヤマト運輸　追跡番号：1234-5678-9012
+                                ヤマト運輸 追跡番号：1234-5678-9012
                             </span>
                             <span className="shipped-note">発送済みのため変更不可</span>
                         </div>
