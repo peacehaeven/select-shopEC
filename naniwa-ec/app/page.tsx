@@ -52,7 +52,7 @@ export default function HomePage() {
             <span className={styles.arrow}></span>
           </div>
           <div className={styles.sectionContent}>
-            <p>一律￥1,000</p>
+            <p>一律￥800</p>
             <p>※北海道・沖縄・一部離島は</p>
             <p>＋600円頂戴いたします</p>
           </div>
@@ -81,11 +81,14 @@ function ProductCard({ product }: { product: Product }) {
 
   return (
     <div className={styles.card}>
-      <Link href={`/${product.id}`}>
+      {/* 1. Linkを削除して、cardContentというdivで囲むように変更 */}
+      <div className={styles.cardContent}>
         <h3 className={styles.productName}>{product.name}</h3>
         <p className={styles.price}>{product.price.toLocaleString()}円 (税込)</p>
-        <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '1rem' }}>{product.feature}</p>
-      </Link>
+        <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '1rem' }}>
+          {product.feature}
+        </p>
+      </div>
       
       {/* カートに入れるボタンを追加 */}
       <button onClick={handleAddToCart} className={styles.cartButton}>
