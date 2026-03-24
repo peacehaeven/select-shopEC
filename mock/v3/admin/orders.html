@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注文管理 — なにわセレクトショップ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../global.css">
+  <style>
+    .nav-admin-label { font-size: 12px; color: #aaa; }
+    .nav-link-light { color: #bbb; }
+
+    /* ── 注文カード ── */
+    .order-list { display: flex; flex-direction: column; gap: 16px; }
+
+    .order-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .order-card.is-shipped {
+      border-left: 4px solid #333;
+    }
+    .order-card.is-pending {
+      border-left: 4px solid #555;
+    }
+
+    /* カードヘッダー */
+    .order-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .order-header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .order-number {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .order-date { font-size: 12px; color: var(--muted); }
+    .order-total { font-size: 15px; font-weight: 500; }
+
+    /* カードボディ */
+    .order-card-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0;
+    }
+    .order-section {
+      padding: 16px 20px;
+      border-right: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .order-section:last-child { border-right: none; }
+    .order-section-title {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .order-info-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 5px;
+      line-height: 1.6;
+    }
+    .order-info-label {
+      color: var(--muted);
+      min-width: 68px;
+      flex-shrink: 0;
+      font-size: 12px;
+    }
+    .order-info-value { color: var(--ink); font-size: 13px; }
+
+    /* 商品リスト */
+    .item-list { list-style: none; }
+    .item-list li {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 13px;
+      gap: 8px;
+    }
+    .item-list li:last-child { border-bottom: none; }
+    .item-name { color: var(--ink); flex: 1; }
+    .item-meta { color: var(--muted); white-space: nowrap; font-size: 12px; }
+
+    /* カードフッター */
+    .order-card-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg);
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .tracking-info {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tracking-info a {
+      color: var(--ink);
+      text-decoration: underline;
+    }
+
+    /* ── モーダル ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      width: 100%;
+      max-width: 460px;
+      padding: 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      animation: modalIn 0.18s ease;
+    }
+    @keyframes modalIn {
+      from { transform: translateY(-12px); opacity: 0; }
+      to   { transform: translateY(0);     opacity: 1; }
+    }
+    .modal-title { font-family: 'Noto Serif JP', serif; font-size: 18px; margin-bottom: 6px; }
+    .modal-order-num { font-size: 12px; color: var(--muted); margin-bottom: 24px; }
+    .modal-footer {
+      display: flex; gap: 10px; justify-content: flex-end;
+      margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--border);
+    }
+
+    /* ── 追加クラス ── */
+    .nav-admin-label { font-size: 12px; color: var(--muted); }
+    .nav-link-light  { color: #ccc; }
+    .order-info-row-total { margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+    .fw-bold         { font-weight: 700; }
+    .btn-ship        { padding: 6px 16px; font-size: 13px; }
+    .shipped-note    { font-size: 12px; color: var(--muted); }
+    .modal-hint      { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">なにわ<span>セレクト</span>ショップ <span class="nav-admin-label">管理</span></div>
+  <div class="nav-links">
+    <a href="../index.html" class="nav-link-light">ショップへ戻る</a>
+    <a href="login.html" class="nav-link-light">ログアウト</a>
+  </div>
+</nav>
+
+<main>
+  <div class="admin-tabs">
+    <a href="orders.html" class="active">注文管理</a>
+    <a href="products.html">商品管理</a>
+  </div>
+
+  <div>
+    <h2 class="section-title">注文一覧</h2>
+      <div class="order-list">
+
+        <!-- ────────────────────────────────
+             注文①：注文受付済み
+        ──────────────────────────────── -->
+        <div class="order-card is-pending" id="card-20250601-0042">
+          <div class="order-card-header">
+            <div class="order-header-left">
+              <span class="order-number">#20250601-0042</span>
+              <span class="order-date">2025年6月1日</span>
+              <span class="status status-new" id="status-20250601-0042">注文受付済み</span>
+            </div>
+            <span class="order-total">¥13,760</span>
+          </div>
+
+          <div class="order-card-body">
+            <!-- 注文者・配送先 -->
+            <div class="order-section">
+              <p class="order-section-title">注文者 / 配送先</p>
+              <div class="order-info-row">
+                <span class="order-info-label">お名前</span>
+                <span class="order-info-value">山田 太郎</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">メール</span>
+                <span class="order-info-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1168707c707570517469707c617d743f727e7c">[email&#160;protected]</a></span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">電話番号</span>
+                <span class="order-info-value">090-1234-5678</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">郵便番号</span>
+                <span class="order-info-value">530-0001</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">住所</span>
+                <span class="order-info-value">大阪府大阪市北区梅田1-1-1</span>
+              </div>
+            </div>
+
+            <!-- 注文商品 -->
+            <div class="order-section">
+              <p class="order-section-title">注文商品</p>
+              <ul class="item-list">
+                <li>
+                  <span class="item-name">なにわ黒毛和牛 すき焼きセット</span>
+                  <span class="item-meta">¥8,640 × 1</span>
+                </li>
+                <li>
+                  <span class="item-name">泉州水茄子 浅漬けセット</span>
+                  <span class="item-meta">¥2,160 × 2</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- 金額 -->
+            <div class="order-section">
+              <p class="order-section-title">金額</p>
+              <div class="order-info-row">
+                <span class="order-info-label">小計</span>
+                <span class="order-info-value">¥12,960</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">送料</span>
+                <span class="order-info-value">¥800</span>
+              </div>
+              <div class="order-info-row order-info-row-total">
+                <span class="order-info-label fw-bold">合計</span>
+                <span class="order-info-value fw-bold">¥13,760</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-card-footer" id="footer-20250601-0042">
+            <span class="tracking-info">追跡番号：未登録</span>
+            <button
+              class="btn btn-success btn-ship"
+              onclick="openModal('20250601-0042', '山田 太郎')">
+              発送済みにする
+            </button>
+          </div>
+        </div>
+
+
+        <!-- ────────────────────────────────
+             注文②：注文受付済み
+        ──────────────────────────────── -->
+        <div class="order-card is-pending" id="card-20250601-0041">
+          <div class="order-card-header">
+            <div class="order-header-left">
+              <span class="order-number">#20250601-0041</span>
+              <span class="order-date">2025年6月1日</span>
+              <span class="status status-new" id="status-20250601-0041">注文受付済み</span>
+            </div>
+            <span class="order-total">¥5,400</span>
+          </div>
+
+          <div class="order-card-body">
+            <div class="order-section">
+              <p class="order-section-title">注文者 / 配送先</p>
+              <div class="order-info-row">
+                <span class="order-info-label">お名前</span>
+                <span class="order-info-value">鈴木 花子</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">メール</span>
+                <span class="order-info-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="087b7d727d6361486d70696578646d266b6765">[email&#160;protected]</a></span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">電話番号</span>
+                <span class="order-info-value">080-9876-5432</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">郵便番号</span>
+                <span class="order-info-value">542-0012</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">住所</span>
+                <span class="order-info-value">大阪府大阪市中央区谷町2-2-2</span>
+              </div>
+            </div>
+
+            <div class="order-section">
+              <p class="order-section-title">注文商品</p>
+              <ul class="item-list">
+                <li>
+                  <span class="item-name">大阪湾 天然ハモ 白焼きセット</span>
+                  <span class="item-meta">¥5,400 × 1</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="order-section">
+              <p class="order-section-title">金額</p>
+              <div class="order-info-row">
+                <span class="order-info-label">小計</span>
+                <span class="order-info-value">¥4,600</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">送料</span>
+                <span class="order-info-value">¥800</span>
+              </div>
+              <div class="order-info-row order-info-row-total">
+                <span class="order-info-label fw-bold">合計</span>
+                <span class="order-info-value fw-bold">¥5,400</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-card-footer" id="footer-20250601-0041">
+            <span class="tracking-info">追跡番号：未登録</span>
+            <button
+              class="btn btn-success btn-ship"
+              onclick="openModal('20250601-0041', '鈴木 花子')">
+              発送済みにする
+            </button>
+          </div>
+        </div>
+
+
+        <!-- ────────────────────────────────
+             注文③：発送済み
+        ──────────────────────────────── -->
+        <div class="order-card is-shipped">
+          <div class="order-card-header">
+            <div class="order-header-left">
+              <span class="order-number">#20250531-0040</span>
+              <span class="order-date">2025年5月31日</span>
+              <span class="status status-shipped">発送済み</span>
+            </div>
+            <span class="order-total">¥3,456</span>
+          </div>
+
+          <div class="order-card-body">
+            <div class="order-section">
+              <p class="order-section-title">注文者 / 配送先</p>
+              <div class="order-info-row">
+                <span class="order-info-label">お名前</span>
+                <span class="order-info-value">田中 一郎</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">メール</span>
+                <span class="order-info-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6c180d020d070d2c09140d011c0009420f0301">[email&#160;protected]</a></span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">電話番号</span>
+                <span class="order-info-value">070-1111-2222</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">郵便番号</span>
+                <span class="order-info-value">550-0014</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">住所</span>
+                <span class="order-info-value">大阪府大阪市西区北堀江3-3-3</span>
+              </div>
+            </div>
+
+            <div class="order-section">
+              <p class="order-section-title">注文商品</p>
+              <ul class="item-list">
+                <li>
+                  <span class="item-name">なにわ伝統野菜 詰め合わせ</span>
+                  <span class="item-meta">¥1,620 × 1</span>
+                </li>
+                <li>
+                  <span class="item-name">大阪みかん 旬の詰め合わせ</span>
+                  <span class="item-meta">¥1,080 × 1</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="order-section">
+              <p class="order-section-title">金額</p>
+              <div class="order-info-row">
+                <span class="order-info-label">小計</span>
+                <span class="order-info-value">¥2,700</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">送料</span>
+                <span class="order-info-value">¥800</span>
+              </div>
+              <div class="order-info-row order-info-row-total">
+                <span class="order-info-label fw-bold">合計</span>
+                <span class="order-info-value fw-bold">¥3,456</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-card-footer">
+            <span class="tracking-info">
+              ヤマト運輸　追跡番号：
+              <a href="#" onclick="return false;">1234-5678-9012</a>
+            </span>
+            <span class="shipped-note">発送済みのため変更不可</span>
+          </div>
+        </div>
+
+
+        <!-- ────────────────────────────────
+             注文④：発送済み
+        ──────────────────────────────── -->
+        <div class="order-card is-shipped">
+          <div class="order-card-header">
+            <div class="order-header-left">
+              <span class="order-number">#20250531-0039</span>
+              <span class="order-date">2025年5月31日</span>
+              <span class="status status-shipped">発送済み</span>
+            </div>
+            <span class="order-total">¥9,720</span>
+          </div>
+
+          <div class="order-card-body">
+            <div class="order-section">
+              <p class="order-section-title">注文者 / 配送先</p>
+              <div class="order-info-row">
+                <span class="order-info-label">お名前</span>
+                <span class="order-info-value">佐藤 恵子</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">メール</span>
+                <span class="order-info-value"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="136072677c53766b727e637f763d707c7e">[email&#160;protected]</a></span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">電話番号</span>
+                <span class="order-info-value">06-9999-8888</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">郵便番号</span>
+                <span class="order-info-value">558-0041</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">住所</span>
+                <span class="order-info-value">大阪府大阪市住吉区南住吉4-4-4</span>
+              </div>
+            </div>
+
+            <div class="order-section">
+              <p class="order-section-title">注文商品</p>
+              <ul class="item-list">
+                <li>
+                  <span class="item-name">なにわ黒毛和牛 すき焼きセット</span>
+                  <span class="item-meta">¥8,640 × 1</span>
+                </li>
+                <li>
+                  <span class="item-name">なにわ黒豆 煮豆セット</span>
+                  <span class="item-meta">¥1,296 × 1</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="order-section">
+              <p class="order-section-title">金額</p>
+              <div class="order-info-row">
+                <span class="order-info-label">小計</span>
+                <span class="order-info-value">¥8,920</span>
+              </div>
+              <div class="order-info-row">
+                <span class="order-info-label">送料</span>
+                <span class="order-info-value">¥800</span>
+              </div>
+              <div class="order-info-row order-info-row-total">
+                <span class="order-info-label fw-bold">合計</span>
+                <span class="order-info-value fw-bold">¥9,720</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-card-footer">
+            <span class="tracking-info">
+              ゆうパック　追跡番号：
+              <a href="#" onclick="return false;">0987-6543-2100</a>
+            </span>
+            <span class="shipped-note">発送済みのため変更不可</span>
+          </div>
+        </div>
+
+      </div><!-- /.order-list -->
+  </div>
+
+</main>
+
+<footer>© 2025 なにわセレクトショップ 管理画面</footer>
+
+
+<!-- ══════════════════════════════════════════
+     発送情報入力モーダル
+═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="shipModal">
+  <div class="modal">
+    <p class="modal-title">発送情報の入力</p>
+    <p class="modal-order-num" id="modalOrderNum"></p>
+
+    <div class="form-group">
+      <label for="carrierSelect">配送業者</label>
+      <select id="carrierSelect">
+        <option value="">選択してください</option>
+        <option value="yamato">ヤマト運輸</option>
+        <option value="sagawa">佐川急便</option>
+        <option value="yupack">ゆうパック</option>
+        <option value="other">その他</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="trackingInput">追跡番号</label>
+      <input type="text" id="trackingInput" placeholder="例：1234-5678-9012">
+      <p class="modal-hint">
+        ※ 入力後、お客様のメールアドレスに発送通知メールが自動送信されます。
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">キャンセル</button>
+      <button class="btn btn-success" onclick="submitShip()">発送済みにする</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentOrderNum = '';
+  let currentName    = '';
+
+  function openModal(orderNum, name) {
+    currentOrderNum = orderNum;
+    currentName     = name;
+    document.getElementById('modalOrderNum').textContent =
+      '注文番号：#' + orderNum + '\u3000' + name + ' 様';
+    document.getElementById('carrierSelect').value = '';
+    document.getElementById('trackingInput').value  = '';
+    document.getElementById('shipModal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('shipModal').classList.remove('open');
+  }
+
+  function submitShip() {
+    const carrier  = document.getElementById('carrierSelect').value;
+    const tracking = document.getElementById('trackingInput').value.trim();
+
+    if (!carrier) {
+      alert('配送業者を選択してください。');
+      return;
+    }
+    if (!tracking) {
+      alert('追跡番号を入力してください。');
+      return;
+    }
+
+    const carrierLabel = document.getElementById('carrierSelect')
+      .options[document.getElementById('carrierSelect').selectedIndex].text;
+
+    // ── カードを発送済み状態に更新 ──
+    const card   = document.getElementById('card-'   + currentOrderNum);
+    const status = document.getElementById('status-' + currentOrderNum);
+    const footer = document.getElementById('footer-' + currentOrderNum);
+
+    card.classList.remove('is-pending');
+    card.classList.add('is-shipped');
+
+    status.textContent = '発送済み';
+    status.className   = 'status status-shipped';
+
+    footer.innerHTML =
+      '<span class="tracking-info">' +
+        carrierLabel + '\u3000追跡番号：' +
+        '<a href="#" onclick="return false;">' + tracking + '</a>' +
+      '</span>' +
+      '<span class="shipped-note">発送済みのため変更不可</span>';
+
+    closeModal();
+  }
+
+  document.getElementById('shipModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
+
+</body>
+</html>

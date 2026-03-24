@@ -21,79 +21,48 @@ const products: Product[] = [
   { id: 8, name: "まいど！ミックスジュースゼリー", price: 2800, feature: "喫茶店の味を再現した濃厚果肉" },
   { id: 9, name: "串カツだるまインスパイアセット", price: 5500, feature: "卓上フライヤー対応・冷凍30本入" },
 ];
+import { createClient } from "@/lib/supabase/server" // インポート、外部から取り込む
 
-export default function HomePage() {
-  const recommendedProducts = products.filter(p => p.isRecommended).slice(0, 3);
+export default async function Home() {                // 「Home」という名前の非同期関数をデフォルトでエクスポート
+  const supabase = await createClient()
 
-  return (
-    <main className={styles.container}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>まいど！なにわセレクトショップ</h1>
-        <p>大阪のええもん、揃うてます。</p>
-      </header>
+  const { data: products, error } = await supabase
+    .from("products")
+    .select("*")
+    .order("created_at")
 
-      <section>
-        <h2 style={{ marginBottom: '1.5rem', fontWeight: 'bold' }}>-全商品リスト-</h2>
-        <div className={styles.grid}>
-          {products.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
-      <section className={styles.userGuide}>
-        <div className={styles.guideHeader}>
-          <h2 className={styles.guideTitle}>ご利用案内</h2>
-          <p className={styles.guideSubTitle}>User Guide</p>
-        </div>
+  if (error) {
+    return (
+      <>
+        <div>エラーが発生しました: {error.message}</div>
+        <div>サンプルです。</div>
+      </>
+    )
+  } else {
+    return (
+      <main>
+        <h1 className="test">接続テスト</h1>
 
-        <div className={styles.guideSection}>
-          <div className={styles.sectionTitleBox}>
-            <span>送料について</span>
-            <span className={styles.arrow}></span>
+        {products.map((product) => (
+          <div key={product.id}>
+            {product.name}{product.is_featured && ("★おすすめ")}<br />
+            ¥{product.price}／在庫:{product.stock}個
           </div>
-          <div className={styles.sectionContent}>
-            <p>一律￥800</p>
-            <p>※北海道・沖縄・一部離島は</p>
-            <p>＋600円頂戴いたします</p>
-          </div>
-        </div>
-
-        {/* お支払いについても枠だけ作っておく場合 */}
-        <div className={styles.guideSection}>
-          <div className={styles.sectionTitleBox}>
-            <span>お支払いについて</span>
-            <span className={styles.arrow}>{'>'}</span>
-          </div>
-          <div className={styles.sectionContent}>
-            <p>お支払いは、クレジットカード決済のみ対応しております。</p>
-          </div>
-        </div>
-      </section>
-    </main>
-  );
+        ))}
+      </main>
+    )
+  }
 }
 
-function ProductCard({ product }: { product: Product }) {
-  // カートボタンを押した時の動き
-  const handleAddToCart = () => {
-    alert(`${product.name} をカートに入れました！🛒`);
-  };
+/*
 
-  return (
-    <div className={styles.card}>
-      {/* 1. Linkを削除して、cardContentというdivで囲むように変更 */}
-      <div className={styles.cardContent}>
-        <h3 className={styles.productName}>{product.name}</h3>
-        <p className={styles.price}>{product.price.toLocaleString()}円 (税込)</p>
-        <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '1rem' }}>
-          {product.feature}
-        </p>
-      </div>
-      
-      {/* カートに入れるボタンを追加 */}
-      <button onClick={handleAddToCart} className={styles.cartButton}>
-        カートに入れる
-      </button>
-    </div>
-  );
-}
+■ products?.map((product) => 　とは
+配列（products）の 各要素 を（product）として取り出す。
+（空になるまでループ）
+
+また、今回取り出した（product）はオブジェクトです。
+こんなん → { id:1, name:"商品A", ...}
+
+product.name　→　オブジェクト（product）のプロパティ（name）
+
+*/
