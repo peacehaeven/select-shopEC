@@ -2,7 +2,7 @@
 いちごチーム
 
 ## QA/課題テンプレート
-https://docs.google.com/spreadsheets/d/1UuZ-SbOh3jC3UoJuTVPsflqbF1cRhi_6EeqbMxnQ70c/edit?gid=0#gid=0
+https://docs.google.com/spreadsheets/d/1dI_f0XHH5Vh9igDmtAQsfcXEVKQVNGpsEf1GxDeIIB0/edit?gid=729817502#gid=729817502
 
 ## 役割
 | ロール名 | 担当者 |　サブ担当者　|
