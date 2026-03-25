@@ -26,26 +26,6 @@ export default function HomePage() {
   const recommendedProducts = products.filter(p => p.isRecommended).slice(0, 3);
 
   return (
-    <main className={styles.container}>
-      <section className={styles.hero}>
-        <div className={styles.heroInner}>
-          <div className={styles.heroBadge}>
-            <span>大阪産</span>
-            <span className={styles.badgeLine}></span>
-            <span>厳選</span>
-          </div>
-
-          <div className={styles.heroTextContent}>
-            <h2 className={styles.heroTitle}>
-              <span className={styles.heroMainText}>まいど！</span>
-              <span className={styles.heroSubText}>なにわセレクトショップ</span>
-            </h2>
-            <p className={styles.heroCopy}>
-              ええもん、うまいもん。大阪の日常を、あなたに。
-            </p>
-          </div>
-        </div>
-      </section>
 
       <section>
         <h2 style={{ marginBottom: '1.5rem', fontWeight: 'bold' }}>-全商品リスト-</h2>
@@ -55,8 +35,6 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-      
-    </main>
   );
 }
 
