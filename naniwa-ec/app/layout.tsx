@@ -24,10 +24,13 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="ja" // enからjaにしておきましょう！
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      {/* classNameの "flex flex-col" を消して、全画面表示を優先させます */}
+      <body className="min-h-full">
+        {children}
+      </body>
     </html>
   );
 }

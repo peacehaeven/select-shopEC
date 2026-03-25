@@ -25,12 +25,12 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-main div:not(.login *) {
+/* main div:not(.login *) {
   max-width: 800px;
   margin: 0 auto;
   padding: 10px;
 }
-
+*/
 .test {
   color: red;
 }
