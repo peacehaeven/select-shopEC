@@ -23,7 +23,6 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
   const [formName, setFormName] = useState("")
   const [formPrice, setFormPrice] = useState("")
   const [formStock, setFormStock] = useState("")
-  const [formFeatured, setFormFeatured] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -32,7 +31,6 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
     setFormName("")
     setFormPrice("")
     setFormStock("")
-    setFormFeatured(false)
     setErrorMsg("")
   }
 
@@ -41,7 +39,6 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
     setFormName(p.name)
     setFormPrice(String(p.price))
     setFormStock(String(p.stock))
-    setFormFeatured(p.is_featured)
     setErrorMsg("")
   }
 
@@ -67,7 +64,7 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
       name: formName.trim(),
       price: Number(formPrice),
       stock: Number(formStock),
-      is_featured: formFeatured,
+      is_featured: false,
     }
 
     let result: { error: string | null }
@@ -132,7 +129,6 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
                 <th>商品名</th>
                 <th>単価</th>
                 <th>在庫</th>
-                <th>おすすめ</th>
                 <th>操作</th>
               </tr>
             </thead>
@@ -142,7 +138,6 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
                   <td>{p.name}</td>
                   <td>{formatPrice(p.price)}</td>
                   <td>{p.stock === 0 ? <span className="badge-sold-out">売り切れ</span> : p.stock}</td>
-                  <td>{p.is_featured ? "✅" : "—"}</td>
                   <td style={{ display: "flex", gap: "8px" }}>
                     <button className="btn btn-outline" style={{ padding: "4px 12px", fontSize: "12px" }} onClick={() => openEdit(p)}>編集</button>
                     <button className="btn btn-outline" style={{ padding: "4px 12px", fontSize: "12px", color: "#c00", borderColor: "#c00" }} onClick={() => handleDelete(p.id, p.name)}>削除</button>
@@ -175,14 +170,7 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
               <input type="number" min="0" value={formStock} onChange={(e) => setFormStock(e.target.value)} placeholder="例: 10" />
             </div>
 
-            <div className="form-group">
-              <label className="label-checkbox">
-                <input type="checkbox" checked={formFeatured} onChange={(e) => setFormFeatured(e.target.checked)} />
-                おすすめ商品として表示する
-              </label>
-            </div>
-
-            {errorMsg && <p style={{ color: "#c00", fontSize: "13px", marginBottom: "16px" }}>{errorMsg}</p>}
+            {errorMsg &&<p style={{ color: "#c00", fontSize: "13px", marginBottom: "16px" }}>{errorMsg}</p>}
 
             <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
               <button className="btn btn-outline" onClick={closeModal}>キャンセル</button>
