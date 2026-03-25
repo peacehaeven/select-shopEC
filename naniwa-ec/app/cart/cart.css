@@ -20,10 +20,10 @@ table {
   table-layout: fixed;
 }
 
-th:nth-child(1), td:nth-child(1) { width: 40%; } /* 商品名：広く取る */
-th:nth-child(2), td:nth-child(2) { width: 15%; text-align: right; } /* 単価 */
-th:nth-child(3), td:nth-child(3) { width: 24%; text-align: center; } /* 数量 */
-th:nth-child(4), td:nth-child(4) { width: 15%; text-align: right; } /* 小計 */
+th:nth-child(1), td:nth-child(1) { width: 33%; } /* 商品名 */
+th:nth-child(2), td:nth-child(2) { width: 17%; text-align: right; } /* 単価 */
+th:nth-child(3), td:nth-child(3) { width: 25%; text-align: center; } /* 数量 */
+th:nth-child(4), td:nth-child(4) { width: 28%; text-align: right; } /* 小計 */
 th:nth-child(5), td:nth-child(5) { width: 5%; text-align: center; }  /* 削除ボタン */
 
 th {
@@ -37,9 +37,15 @@ th {
 }
 
 td {
-  padding: 24px 16px;
+  padding: 24px 12px;
   border-bottom: 1px solid #f0f0f0;
   vertical-align: middle;
+  word-break: keep-all;
+  white-space: nowrap;
+}
+
+td:first-child {
+  white-space: normal;
   word-break: break-all;
 }
 

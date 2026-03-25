@@ -201,7 +201,7 @@ export default function CartPage() {
             </div>
             <div className="form-group">
               <label>郵便番号</label>
-              <input type="text" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} style={{ width: '160px' }} placeholder="530-0001"/>
+              <input type="text" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} style={{ width: '90px' }} placeholder="530-0001"/>
             </div>
             <div className="form-group">
               <label>住所</label>
@@ -209,11 +209,11 @@ export default function CartPage() {
             </div>
             <div className="form-group">
               <label>電話番号</label>
-              <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="090-0000-0000"/>
+              <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} style={{ width: '120px' }} placeholder="090-0000-0000"/>
             </div>
             <div className="form-group">
               <label>カード番号</label>
-              <input type="text" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} placeholder="0000-0000-0000-0000"/>
+              <input type="text" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} style={{ width: '165px' }} placeholder="0000 0000 0000 0000"/>
             </div>
             <div className="form-group">
               <label>有効期限 (月/年)</label>
