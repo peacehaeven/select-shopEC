@@ -35,9 +35,7 @@ export default function Footer() {
                 </div>
                 <div className="sectionContent">
                     <p><strong>発送準備に入る前（発送連絡のメールが届くまで）</strong>であれば承ることが可能です。</p>
-                    <p>キャンセルをご希望の場合は、お早めに下記までご連絡をお願いいたします。</p>
-                    <p>電話番号：06-0141-1539</p>
-                    <p>メール：support@naniwa-select.example.com</p>
+                    <p>キャンセルをご希望の場合は、お早めに『お電話』か『メール』でご連絡をお願いいたします。</p>
                 </div>
             </div>
 
