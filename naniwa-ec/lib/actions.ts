@@ -1,5 +1,6 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
 import { createClient } from "@/lib/supabase/server"
 
 // ── 認証 ──────────────────────────────────────────
@@ -78,5 +79,6 @@ export async function deleteProduct(id: string): Promise<{ error: string | null 
     .update({ deleted_at: new Date().toISOString() })
     .eq("id", id)
   if (error) return { error: error.message }
+  revalidatePath("/admin/products")
   return { error: null }
 }

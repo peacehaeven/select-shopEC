@@ -150,7 +150,7 @@ export default function OrdersPage() {
                     {order.status === "cancelled" && "キャンセル済み"}
                   </span>
                 </div>
-                <span>¥{order.total.toLocaleString()}</span>
+                <span>¥{order.total.toLocaleString()}<small style={{ marginLeft: "4px", fontWeight: "normal" }}>（税込）</small></span>
               </div>
 
               {/* ボディ：3カラム（2番目の子div） */}
@@ -182,7 +182,7 @@ export default function OrdersPage() {
                   <p>金額明細</p>
                   <div><span>小計</span><span>¥{order.subtotal.toLocaleString()}</span></div>
                   <div><span>送料</span><span>¥{order.shipping_fee.toLocaleString()}</span></div>
-                  <div><span>合計</span><span>¥{order.total.toLocaleString()}</span></div>
+                  <div><span>合計（税込）</span><span>¥{order.total.toLocaleString()}</span></div>
                 </div>
               </div>
 

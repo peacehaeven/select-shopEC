@@ -1,4 +1,4 @@
-const TAX_RATE = 1.1
+const TAX_RATE = 1.08
 
 /** 税込価格を計算（小数点以下切り捨て） */
 export function taxIncluded(taxExcludedPrice: number): number {
