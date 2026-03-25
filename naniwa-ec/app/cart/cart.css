@@ -1,7 +1,7 @@
 /* カート全体のレイアウト */
 .cart-layout {
   display: grid;
-  grid-template-columns: 1fr 240px; /* メインとサイドバー */
+  grid-template-columns: 1fr 300px; /* メインとサイドバー */
   gap: 32px;
   align-items: start;
 }
@@ -95,6 +95,14 @@ td {
   outline: none;
   border-color: #333; /* フォーカス時に少し濃く */
   background-color: #fff;
+}
+
+.form-group input[type="password"] {
+  letter-spacing: 0.3em;
+}
+
+input[placeholder="MM/YY"] {
+  font-family: monospace;
 }
 
 /* 注文内容（サマリー） */
@@ -194,4 +202,17 @@ td {
   background-color: #ccc;
   cursor: not-allowed;
   transform: none;
+}
+
+/* エラーメッセージのスタイル */
+.error-message {
+  color: #e03131; 
+  font-size: 13px; 
+  font-weight: 600;
+  margin-top: 12px; 
+  text-align: center; 
+  /* background-color: #fff5f5; */
+  padding: 10px;
+  border-radius: 4px;
+  line-height: 1.4;
 }

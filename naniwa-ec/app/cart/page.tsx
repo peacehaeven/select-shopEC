@@ -18,16 +18,25 @@ export default function CartPage() {
     }
   ]);
 
-  // お届け先情報（前回と同じ）
-  const [customerName, setCustomerName] = useState("山田 太郎");
-  const [customerEmail, setCustomerEmail] = useState("test@example.com");
-  const [postalCode, setPostalCode] = useState("530-0001");
-  const [address, setAddress] = useState("大阪府大阪市北区梅田1-1-1");
-  const [phoneNumber, setPhoneNumber] = useState("090-0000-0000");
+  // お届け先情報（テスト）
+  // const [customerName, setCustomerName] = useState("山田 太郎");
+  // const [customerEmail, setCustomerEmail] = useState("test@example.com");
+  // const [postalCode, setPostalCode] = useState("530-0001");
+  // const [address, setAddress] = useState("大阪府大阪市北区梅田1-1-1");
+  // const [phoneNumber, setPhoneNumber] = useState("090-0000-0000");
+  const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [address, setAddress] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [cvv, setCvv] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   // --- 2. 数量変更の関数 ---
   const updateQuantity = (id: string, newQty: number) => {
-    setItems(items.map(item => 
+    setItems(items.map(item =>
       item.id === id ? { ...item, quantity: Math.max(1, newQty) } : item
     ));
   };
@@ -39,19 +48,56 @@ export default function CartPage() {
     }
   };
 
-  // --- 4. 計算ロジック（Stateに合わせて動的に計算） ---
+  // --- 4. 計算ロジック ---
   const subtotal = items.reduce((sum, item) => sum + (item.price * 1.1 * item.quantity), 0);
   const shipping = items.length > 0 ? 800 : 0; // 商品がなければ送料も0
   const total = subtotal + shipping;
 
-  // 注文処理（前回のロジックを継承）
+  // --- 5. 注文処理 ---
   const handleOrder = async (e: React.MouseEvent) => {
     e.preventDefault();
+    setErrorMessage("");
+
     if (items.length === 0) {
       alert("カートに商品がありません。");
       return;
     }
-    const message = 
+
+    // バリデーションチェック
+    if (!customerName.trim()) {
+      setErrorMessage("お名前が未入力です。");
+      return;
+    }
+    if (!customerEmail.trim()) {
+      setErrorMessage("メールアドレスが未入力です。");
+      return;
+    }
+    if (!postalCode.trim()) {
+      setErrorMessage("郵便番号が未入力です。");
+      return;
+    }
+    if (!address.trim()) {
+      setErrorMessage("住所が未入力です。");
+      return;
+    }
+    if (!phoneNumber.trim()) {
+      setErrorMessage("電話番号が未入力です。");
+      return;
+    }
+    if (!cardNumber.trim()) {
+      setErrorMessage("カード番号が未入力です。");
+      return;
+    }
+    if (!expiryDate.trim()) {
+      setErrorMessage("有効期限が未入力です。");
+      return;
+    }
+    if (!cvv.trim()) {
+      setErrorMessage("セキュリティコードが未入力です。");
+      return;
+    }
+
+    const message =
       "【注文内容の最終確認】\n\n" +
       "この内容で注文を確定してもよろしいですか？\n\n" +
       "■ お届けの目安\n" +
@@ -123,8 +169,8 @@ export default function CartPage() {
                       </td>
                       <td>¥{Math.floor(item.price * 1.1 * item.quantity).toLocaleString()}</td>
                       <td>
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           className="remove-btn"
                           onClick={() => removeItem(item.id)}
                         >
@@ -143,31 +189,39 @@ export default function CartPage() {
             )}
           </div>
 
-
-
-
           <h3 style={{ fontSize: '16px', marginBottom: '16px', marginTop: '32px' }}>お届け先</h3>
           <div className="card">
-            {/* onChange を追加して、入力した内容が useState に保存されるようにする */}
             <div className="form-group">
               <label>お名前</label>
-              <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
+              <input type="text" value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="山田 太郎" />
             </div>
             <div className="form-group">
               <label>メールアドレス</label>
-              <input type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} />
+              <input type="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} placeholder="test@example.com"/>
             </div>
             <div className="form-group">
               <label>郵便番号</label>
-              <input type="text" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} style={{ width: '160px' }} />
+              <input type="text" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} style={{ width: '160px' }} placeholder="530-0001"/>
             </div>
             <div className="form-group">
               <label>住所</label>
-              <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} />
+              <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="大阪府大阪市北区梅田1-1-1"/>
             </div>
             <div className="form-group">
               <label>電話番号</label>
-              <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+              <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="090-0000-0000"/>
+            </div>
+            <div className="form-group">
+              <label>カード番号</label>
+              <input type="text" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} placeholder="0000-0000-0000-0000"/>
+            </div>
+            <div className="form-group">
+              <label>有効期限 (月/年)</label>
+              <input type="text" value={expiryDate} onChange={(e) => setExpiryDate(e.target.value)} style={{ width: '60px' }} placeholder="MM/YY" />
+            </div>
+            <div className="form-group">
+              <label>セキュリティコード</label>
+              <input type="password" value={cvv} onChange={(e) => setCvv(e.target.value)} style={{ width: '60px' }} placeholder="000"/>
             </div>
           </div>
         </div>
@@ -178,9 +232,14 @@ export default function CartPage() {
           <div className="summary-row"><span>送料</span><span>¥{shipping.toLocaleString()}</span></div>
           <div className="summary-total"><span>合計</span><span>¥{total.toLocaleString()}</span></div>
           <br />
-          <Link href="#" onClick={handleOrder} className="btn btn-primary"  >
+          <Link href="#" onClick={handleOrder} className="btn btn-primary">
             注文する
           </Link>
+          {errorMessage && (
+            <div className="error-message">
+              ● {errorMessage}
+            </div>
+          )}
           <p>発送目安：3営業日以内（土日祝を除く）<br />
             ※配送地域や交通事情により、お届け日が変動する場合がございます。
           </p>
