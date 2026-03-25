@@ -76,9 +76,55 @@
   letter-spacing: 0.05em;
 }
 
-/* 電話番号の絵文字部分を少し調整 */
-.sectionContent p:contains(":phone:") {
+.shopInfoContainer {
+  max-width: 800px;
+  margin: 60px auto 0;
+  padding-top: 40px;
+  border-top: 1px solid #ddd;
+}
+
+.shopInfoTitle {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
+  letter-spacing: 0.1em;
+}
+
+.shopInfoContent {
+  background-color: transparent;
+}
+
+.shopInfoRow {
   display: flex;
-  align-items: center;
-  gap: 5px;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.shopInfoRow:last-child { border-bottom: none; }
+
+.shopInfoRow .label {
+  width: 150px;
+  font-weight: bold;
+  color: #666;
+}
+
+.shopInfoRow .value {
+  flex: 1;
+  color: #333;
+}
+
+.shopInfoRow .note {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.copyright {
+  display: block;
+  text-align: center;
+  margin-top: 50px;
+  font-size: 11px;
+  color: #aaaaaa;
 }

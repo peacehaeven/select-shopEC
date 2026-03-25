@@ -37,9 +37,39 @@ export default function Footer() {
                     <p><strong>発送準備に入る前（発送連絡のメールが届くまで）</strong>であれば承ることが可能です。</p>
                     <p>キャンセルをご希望の場合は、お早めに下記までご連絡をお願いいたします。</p>
                     <p>電話番号：06-0141-1539</p>
-                    <p>mail：support@naniwa-select.example.com</p>
+                    <p>メール：support@naniwa-select.example.com</p>
                 </div>
             </div>
+
+            <div className="shopInfoContainer">
+                <h2 className="shopInfoTitle">SHOP INFO</h2>
+                <div className="shopInfoContent">
+                    <div className="shopInfoRow">
+                        <span className="label">店舗名</span>
+                        <span className="value">なにわセレクトショップ</span>
+                    </div>
+                    <div className="shopInfoRow">
+                        <span className="label">運営責任者</span>
+                        <span className="value">浪速 太郎（なにわ たろう）</span>
+                    </div>
+                    <div className="shopInfoRow">
+                        <span className="label">所在地</span>
+                        <span className="value">〒540-0032 大阪府大阪市中央区天満橋京町 1-1</span>
+                    </div>
+                    <div className="shopInfoRow">
+                        <span className="label">電話番号</span>
+                        <div className="value">
+                            <p>06-0141-1539</p>
+                            <p className="note">※受付時間：10:00〜18:00（土日祝を除く）</p>
+                        </div>
+                    </div>
+                    <div className="shopInfoRow">
+                        <span className="label">メール</span>
+                        <span className="value">support@naniwa-select.example.com</span>
+                    </div>
+                </div>
+            </div>
+
             <small className="copyright">&copy; 2026 Naniwa Select shop</small>
         </footer>
     )
