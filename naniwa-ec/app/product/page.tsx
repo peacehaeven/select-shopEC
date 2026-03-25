@@ -12,13 +12,16 @@ export default async function ProductPage() {
       {/* <Link href="/" className="backLink">← TOPに戻る</Link> */}
       {products.map((product) =>
         <div key={product.id} className="detailCard">
-          <div className="productImageWrapper">
+          {/* {product.is_featured &&(
+            <span className="featuredBadge">おススメ！</span>
+          )} */}
+          {/* <div className="productImageWrapper"> */}
             {/* <img
               src={product.image_url || "/images/no-image.jpg"} // 画像がなければ「NO IMAGE」を出す安全策
               alt={product.name}
               className="productImage"
             /> */}
-          </div>
+          {/* </div> */}
           <h1 className="productTitle">{product.name}</h1>
           <p className="price">{product.price ? `${product.price.toLocaleString()}円 (税込)` : "価格はお問い合わせください"}</p>
           <button className="cartButton">
