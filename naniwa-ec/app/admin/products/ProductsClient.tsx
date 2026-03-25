@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import { addProduct, updateProduct, deleteProduct } from "@/lib/actions"
-import { taxIncluded, formatPrice } from "@/lib/utils/price"
+import { formatPrice } from "@/lib/utils/price"
 import { logout } from "@/lib/actions"
 
 type Product = {
@@ -130,7 +130,7 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
             <thead>
               <tr>
                 <th>商品名</th>
-                <th>価格（税込）</th>
+                <th>単価</th>
                 <th>在庫</th>
                 <th>おすすめ</th>
                 <th>操作</th>
@@ -140,7 +140,7 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
               {products.map((p) => (
                 <tr key={p.id}>
                   <td>{p.name}</td>
-                  <td>{formatPrice(taxIncluded(p.price))}</td>
+                  <td>{formatPrice(p.price)}</td>
                   <td>{p.stock === 0 ? <span className="badge-sold-out">売り切れ</span> : p.stock}</td>
                   <td>{p.is_featured ? "✅" : "—"}</td>
                   <td style={{ display: "flex", gap: "8px" }}>
