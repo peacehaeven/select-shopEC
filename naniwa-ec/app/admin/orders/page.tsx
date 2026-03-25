@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import { cancelOrder, logout } from "@/lib/actions"
+import { taxIncluded } from "@/lib/utils/price"
 
 type OrderItem = {
   product_name: string
@@ -136,7 +137,10 @@ export default function OrdersPage() {
         <h2 className="section-title">注文一覧</h2>
 
         <div className="order-list">
-          {orders.map((order) => (
+          {orders.map((order) => {
+            const displaySubtotal = taxIncluded(order.order_items.reduce((sum, item) => sum + item.unit_price * item.quantity, 0))
+            const displayTotal = displaySubtotal + order.shipping_fee
+            return (
             <div key={order.id} className={`order-card is-${order.status}`}>
 
               {/* ヘッダー（1番目の子div） */}
@@ -150,7 +154,7 @@ export default function OrdersPage() {
                     {order.status === "cancelled" && "キャンセル済み"}
                   </span>
                 </div>
-                <span>¥{order.total.toLocaleString()}<small style={{ marginLeft: "4px", fontWeight: "normal" }}>（税込）</small></span>
+                <span>¥{displayTotal.toLocaleString()}<small style={{ marginLeft: "4px", fontWeight: "normal" }}>（税込）</small></span>
               </div>
 
               {/* ボディ：3カラム（2番目の子div） */}
@@ -180,9 +184,9 @@ export default function OrdersPage() {
                 {/* 金額明細 */}
                 <div>
                   <p>金額明細</p>
-                  <div><span>小計</span><span>¥{order.subtotal.toLocaleString()}</span></div>
+                  <div><span>小計</span><span>¥{displaySubtotal.toLocaleString()}</span></div>
                   <div><span>送料</span><span>¥{order.shipping_fee.toLocaleString()}</span></div>
-                  <div><span>合計（税込）</span><span>¥{order.total.toLocaleString()}</span></div>
+                  <div><span>合計（税込）</span><span>¥{displayTotal.toLocaleString()}</span></div>
                 </div>
               </div>
 
@@ -203,7 +207,8 @@ export default function OrdersPage() {
               </div>
 
             </div>
-          ))}
+            )
+          })}
         </div>
 
         {/* 発送情報入力モーダル */}

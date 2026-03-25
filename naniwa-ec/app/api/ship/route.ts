@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { resend } from "@/lib/resend"
+import { taxIncluded } from "@/lib/utils/price"
 
 const TRACKING_URLS: Record<string, string> = {
   "ヤマト運輸": "https://jizen.kuronekoyamato.co.jp/jizen/servlet/crjz.b.NQ0010?id={n}",
@@ -13,14 +14,22 @@ function buildTrackingUrl(carrier: string, trackingNumber: string): string | nul
   return template ? template.replace("{n}", encodeURIComponent(trackingNumber)) : null
 }
 
+type OrderItem = {
+  product_name: string
+  unit_price: number
+  quantity: number
+}
+
 function buildEmailHtml(params: {
   shippingName: string
   orderNumber: string
   carrier: string
   trackingNumber: string
   trackingUrl: string | null
+  orderItems: OrderItem[]
+  shippingFee: number
 }): string {
-  const { shippingName, orderNumber, carrier, trackingNumber, trackingUrl } = params
+  const { shippingName, orderNumber, carrier, trackingNumber, trackingUrl, orderItems, shippingFee } = params
 
   const trackingSection = trackingUrl
     ? `<tr>
@@ -30,6 +39,18 @@ function buildEmailHtml(params: {
         </td>
       </tr>`
     : ""
+
+  const itemRows = orderItems.map(item => `
+    <tr>
+      <td style="padding:6px 0;border-bottom:1px solid #eee;">${item.product_name}</td>
+      <td style="padding:6px 0;border-bottom:1px solid #eee;text-align:right;white-space:nowrap;">
+        ¥${item.unit_price.toLocaleString("ja-JP")} × ${item.quantity}
+      </td>
+    </tr>`).join("")
+
+  const preTaxSubtotal = orderItems.reduce((sum, item) => sum + item.unit_price * item.quantity, 0)
+  const displaySubtotal = taxIncluded(preTaxSubtotal)
+  const displayTotal = displaySubtotal + shippingFee
 
   return `<!DOCTYPE html>
 <html lang="ja">
@@ -76,17 +97,41 @@ function buildEmailHtml(params: {
               ${trackingSection}
             </table>
 
+            <!-- 注文内容テーブル -->
+            <table width="100%" cellpadding="0" cellspacing="0"
+              style="background:#f9f9f9;border:1px solid #ddd;border-radius:4px;padding:16px 20px;margin-bottom:24px;">
+              <tr>
+                <td colspan="2" style="padding-bottom:12px;font-weight:bold;font-size:13px;color:#666;border-bottom:1px solid #ddd;letter-spacing:1px;">
+                  注文内容
+                </td>
+              </tr>
+              ${itemRows}
+              <tr>
+                <td style="padding:6px 0;color:#666;">小計（税込）</td>
+                <td style="padding:6px 0;text-align:right;">¥${displaySubtotal.toLocaleString("ja-JP")}</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0;color:#666;">送料</td>
+                <td style="padding:6px 0;text-align:right;">¥${shippingFee.toLocaleString("ja-JP")}</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0 0;font-weight:bold;">合計（税込）</td>
+                <td style="padding:8px 0 0;font-weight:bold;text-align:right;">¥${displayTotal.toLocaleString("ja-JP")}</td>
+              </tr>
+            </table>
+
             <p style="margin:0 0 8px;">お届けまでしばらくお待ちください。</p>
-            <p style="margin:0;font-size:13px;color:#666;">
-              ご不明な点がございましたら、このメールにご返信ください。
-            </p>
           </td>
         </tr>
 
-        <!-- フッター -->
+        <!-- 店舗情報・フッター -->
         <tr>
-          <td style="background:#f4f4f4;padding:16px 32px;border-top:1px solid #ddd;font-size:12px;color:#999;text-align:center;">
-            なにわセレクトショップ — 大阪の特産品・名産品をお届けします
+          <td style="background:#f4f4f4;padding:20px 32px;border-top:1px solid #ddd;font-size:12px;color:#666;">
+            <p style="margin:0 0 4px;font-weight:bold;color:#444;">なにわセレクトショップ</p>
+            <p style="margin:0 0 2px;">運営責任者：浪速 太郎（なにわ たろう）</p>
+            <p style="margin:0 0 2px;">所在地：〒540-0032 大阪府大阪市中央区天満橋京町 1-1</p>
+            <p style="margin:0 0 2px;">電話番号：06-0141-1539（受付時間 10:00〜18:00 ／ 土日祝を除く）</p>
+            <p style="margin:0;">メール：<a href="mailto:support@naniwa-select.example.com" style="color:#666;">support@naniwa-select.example.com</a></p>
           </td>
         </tr>
 
@@ -120,10 +165,10 @@ export async function POST(request: NextRequest) {
     tracking_number: string
   }
 
-  // 注文情報取得
+  // 注文情報取得（注文商品・金額も含む）
   const { data: order, error: fetchError } = await supabase
     .from("orders")
-    .select("guest_email, order_number, shipping_name")
+    .select("guest_email, order_number, shipping_name, shipping_fee, order_items(product_name, unit_price, quantity)")
     .eq("id", order_id)
     .single()
 
@@ -158,6 +203,8 @@ export async function POST(request: NextRequest) {
       carrier,
       trackingNumber: tracking_number,
       trackingUrl,
+      orderItems:     order.order_items as OrderItem[],
+      shippingFee:    order.shipping_fee,
     }),
   })
 
