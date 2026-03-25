@@ -5,6 +5,8 @@ import type { NextRequest } from "next/server";
 export async function proxy(request: NextRequest) {
   const response = NextResponse.next({ request: { headers: request.headers } });
 
+  return response;
+
   // /admin/login は認証不要（ここで return しないと無限リダイレクト）
   if (request.nextUrl.pathname === "/admin/login") {
     return response;
