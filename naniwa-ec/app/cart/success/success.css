@@ -1,0 +1,84 @@
+/* 成功画面のコンテナ */
+.success-container {
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+/* 成功カード本体 */
+.success-card {
+  text-align: center;
+  padding: 40px;
+}
+
+/* チェックマークアイコン */
+.success-icon {
+  font-size: 56px;
+  margin-bottom: 24px;
+}
+
+/* メインタイトル */
+.success-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* 注文番号の強調ボックス */
+.order-number-box {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+  margin-bottom: 32px;
+}
+
+.order-number-label {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.order-number-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  letter-spacing: 1px;
+}
+
+.order-number-note {
+  font-size: 12px;
+  color: #d9534f;
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+/* メッセージエリア */
+.success-message {
+  text-align: left;
+  margin-bottom: 32px;
+  color: #333;
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+.message-section {
+  margin-top: 16px;
+}
+
+/* アクションエリア（ボタン部分） */
+.action-area {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  border-top: 1px solid #eee;
+  padding-top: 32px;
+}
+
+.btn-full {
+  width: 100%;
+  max-width: 280px;
+  text-align: center;
+  text-decoration: none;
+}
