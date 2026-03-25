@@ -1,5 +1,5 @@
 import { getProducts } from "@/app/actions/product";
-// import ProductPage  from "@/components/ProductPage";
+import AddToCartButton  from "@/components/AddToCartButton";
 import Link from 'next/link';
 import './product.css';
 
@@ -23,9 +23,7 @@ export default async function ProductPage() {
           {/* </div> */}
           <h1 className="productTitle">{product.name}</h1>
           <p className="price">{product.price ? `${product.price.toLocaleString()}円 (税込)` : "価格はお問い合わせください"}</p>
-          <button className="cartButton">
-            カートに入れる（まいどあり！）
-          </button>
+          <AddToCartButton/>
         </div>
       )}
     </main>
