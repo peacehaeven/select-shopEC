@@ -1,15 +1,15 @@
-import type { Metadata } from "next"
-import "./globals.css"
+import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "なにわセレクトショップ",
   description: "大阪の特産品・名産品をオンラインで販売するECサイト",
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="ja">
@@ -20,5 +20,5 @@ export default function RootLayout({
       </head>
       <body>{children}</body>
     </html>
-  )
+  );
 }

@@ -2,38 +2,57 @@
 import { useState } from 'react'
 import { login } from '@/lib/actions'
 
-export default function Home() {
-    const [email, setEmail] = useState<string>("")
-    const [password, setPassword] = useState<string>("")
-    const [errorMsg, setErrorMsg] = useState<string>("")
+export default function AdminLoginPage() {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [errorMsg, setErrorMsg] = useState("")
+  const [loading, setLoading] = useState(false)
 
-    // ※ログイン認証はSupabaseサーバーがやってくれるので、ここで比較する必要はない。
-    const pushLoginData = async () => {
-        setErrorMsg("")
-        const result = await login(email, password)
-        if (result.error) {
-            setErrorMsg("IDかパスワードが間違っています")
-        } else {
-            window.location.href = "/admin/orders"
-        }
+  const handleLogin = async () => {
+    setErrorMsg("")
+    setLoading(true)
+    const result = await login(email, password)
+    setLoading(false)
+    if (result.error) {
+      setErrorMsg("メールアドレスまたはパスワードが正しくありません")
+    } else {
+      window.location.href = "/admin/orders"
     }
-    return (
-        <main className="login">
-            <div>
-                <h1>管理者ログイン</h1>
-                <form id="login-form">
-                    <div>
-                        <label>メールアドレス</label>
-                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                    </div>
-                    <div>
-                        <label>パスワード</label>
-                        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                    </div>
-                    {errorMsg && <p>{errorMsg}</p>}
-                    <button type="button" onClick={pushLoginData}>ログイン</button>
-                </form>
-            </div>
-        </main>
-    )
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleLogin()
+  }
+
+  return (
+    <main className="login">
+      <div>
+        <h1>管理者ログイン</h1>
+        <div className="form-group">
+          <label>メールアドレス</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={handleKeyDown}
+            autoComplete="email"
+          />
+        </div>
+        <div className="form-group">
+          <label>パスワード</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={handleKeyDown}
+            autoComplete="current-password"
+          />
+        </div>
+        {errorMsg && <p className="error">{errorMsg}</p>}
+        <button className="btn btn-primary" onClick={handleLogin} disabled={loading}>
+          {loading ? "ログイン中..." : "ログイン"}
+        </button>
+      </div>
+    </main>
+  )
 }
