@@ -1,7 +1,7 @@
 import { getProducts } from "@/app/actions/product";
 // import ProductPage  from "@/components/ProductPage";
 import Link from 'next/link';
-import './products.css';
+import './product.css';
 
 
 export default async function ProductPage() {
@@ -9,7 +9,6 @@ export default async function ProductPage() {
 
   return (
     <main className="container">
-      {/* <Link href="/" className="backLink">← TOPに戻る</Link> */}
       {products.map((product) =>
         <div key={product.id} className="detailCard">
           {/* {product.is_featured &&(
