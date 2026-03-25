@@ -26,7 +26,7 @@ export default function Header() {
               </Link>
             </li>
             <li>
-              <Link href="/products" className={pathname === '/products' ? 'active' : ''}>
+              <Link href="/product" className={pathname === '/product' ? 'active' : ''}>
                 商品一覧
               </Link>
             </li>
