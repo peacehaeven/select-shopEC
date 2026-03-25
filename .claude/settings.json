@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git ls-tree -r origin/main)",
+      "Read(//d/Documents/GitHub/25R1116_ichigo_E-Commerce-Project/$HOME/.claude/**)",
+      "Bash(git ls-tree -r origin/feature/cart --name-only)"
+    ]
+  }
+}

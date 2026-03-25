@@ -1,45 +1,28 @@
-import { createClient } from "@/lib/supabase/server" // インポート、外部から取り込む
+import { createClient } from "@/lib/supabase/server"
+import ProductCard from "./components/ProductCard"
 
-export default async function Home() {                // 「Home」という名前の非同期関数をデフォルトでエクスポート
+export default async function TopPage() {
   const supabase = await createClient()
 
-  const { data: products, error } = await supabase
+  const { data: products } = await supabase
     .from("products")
     .select("*")
-    .order("created_at")
+    .order("created_at", { ascending: false })
 
-  if (error) {
-    return (
-      <>
-        <div>エラーが発生しました: {error.message}</div>
-        <div>サンプルです。</div>
-      </>
-    )
-  } else {
-    return (
-      <main>
-        <h1 className="test">接続テスト</h1>
-
-        {products.map((product) => (
-          <div key={product.id}>
-            {product.name}{product.is_featured && ("★おすすめ")}<br />
-            ¥{product.price}／在庫:{product.stock}個
-          </div>
+  return (
+    <main>
+      <h2 className="section-title">商品一覧</h2>
+      <div className="product-grid">
+        {(products ?? []).map((p) => (
+          <ProductCard
+            key={p.id}
+            id={p.id}
+            name={p.name}
+            price={p.price}
+            stock={p.stock}
+          />
         ))}
-      </main>
-    )
-  }
+      </div>
+    </main>
+  )
 }
-
-/*
-
-■ products?.map((product) => 　とは
-配列（products）の 各要素 を（product）として取り出す。
-（空になるまでループ）
-
-また、今回取り出した（product）はオブジェクトです。
-こんなん → { id:1, name:"商品A", ...}
-
-product.name　→　オブジェクト（product）のプロパティ（name）
-
-*/

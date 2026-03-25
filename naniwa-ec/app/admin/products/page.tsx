@@ -18,7 +18,7 @@ export default async function AdminProductsPage() {
 
   const { data: products } = await supabase
     .from('products')
-    .select('id, name, price, stock, is_featured')
+    .select('id, name, price, stock')
     .order('created_at', { ascending: false })
 
   return <ProductsClient initialProducts={products ?? []} />

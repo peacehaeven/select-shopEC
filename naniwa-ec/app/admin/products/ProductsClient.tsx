@@ -9,7 +9,6 @@ type Product = {
   name: string
   price: number
   stock: number
-  is_featured: boolean
 }
 
 type ModalState =
@@ -23,7 +22,6 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
   const [formName, setFormName] = useState("")
   const [formPrice, setFormPrice] = useState("")
   const [formStock, setFormStock] = useState("")
-  const [formFeatured, setFormFeatured] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -32,7 +30,6 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
     setFormName("")
     setFormPrice("")
     setFormStock("")
-    setFormFeatured(false)
     setErrorMsg("")
   }
 
@@ -41,7 +38,6 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
     setFormName(p.name)
     setFormPrice(String(p.price))
     setFormStock(String(p.stock))
-    setFormFeatured(p.is_featured)
     setErrorMsg("")
   }
 
@@ -67,7 +63,7 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
       name: formName.trim(),
       price: Number(formPrice),
       stock: Number(formStock),
-      is_featured: formFeatured,
+      is_featured: false,
     }
 
     let result: { error: string | null }
@@ -130,9 +126,8 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
             <thead>
               <tr>
                 <th>商品名</th>
-                <th>価格（税込）</th>
+                <th>単価</th>
                 <th>在庫</th>
-                <th>おすすめ</th>
                 <th>操作</th>
               </tr>
             </thead>
@@ -140,9 +135,8 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
               {products.map((p) => (
                 <tr key={p.id}>
                   <td>{p.name}</td>
-                  <td>{formatPrice(taxIncluded(p.price))}</td>
+                  <td>{formatPrice(p.price)}</td>
                   <td>{p.stock === 0 ? <span className="badge-sold-out">売り切れ</span> : p.stock}</td>
-                  <td>{p.is_featured ? "✅" : "—"}</td>
                   <td style={{ display: "flex", gap: "8px" }}>
                     <button className="btn btn-outline" style={{ padding: "4px 12px", fontSize: "12px" }} onClick={() => openEdit(p)}>編集</button>
                     <button className="btn btn-outline" style={{ padding: "4px 12px", fontSize: "12px", color: "#c00", borderColor: "#c00" }} onClick={() => handleDelete(p.id, p.name)}>削除</button>
@@ -166,20 +160,13 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
             </div>
 
             <div className="form-group">
-              <label>価格（税抜・円）</label>
+              <label>単価</label>
               <input type="number" min="0" value={formPrice} onChange={(e) => setFormPrice(e.target.value)} placeholder="例: 8000" />
             </div>
 
             <div className="form-group">
               <label>在庫数</label>
               <input type="number" min="0" value={formStock} onChange={(e) => setFormStock(e.target.value)} placeholder="例: 10" />
-            </div>
-
-            <div className="form-group">
-              <label className="label-checkbox">
-                <input type="checkbox" checked={formFeatured} onChange={(e) => setFormFeatured(e.target.checked)} />
-                おすすめ商品として表示する
-              </label>
             </div>
 
             {errorMsg && <p style={{ color: "#c00", fontSize: "13px", marginBottom: "16px" }}>{errorMsg}</p>}
