@@ -189,6 +189,13 @@ export default function CartPage() {
             )}
           </div>
 
+          {/* 在庫確保の注意書き */}
+          {items.length > 0 && (
+            <p style={{ fontSize: "13px", color: "#666", marginTop: "12px" }}>
+              ※ カートへの追加は在庫の確保ではありません。ご注文確定後に在庫をご用意いたします。
+            </p>
+          )}
+
           {/* お届け先フォーム */}
           {items.length > 0 && (
             <>

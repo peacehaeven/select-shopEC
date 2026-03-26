@@ -5,32 +5,6 @@
   background-color: #fff;
 }
 
-/* たこ焼きレイヤー：一番手前 */
-.takoLayer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 100;
-  pointer-events: none;
-}
-
-.fallingTakoyaki {
-  position: absolute;
-  top: -50px;
-  animation: fall 4s linear infinite;
-}
-
-.fallingTakoImg {
-  width: 35px;
-  opacity: 0.8;
-}
-
-@keyframes fall {
-  0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
-  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
-}
 
 /* Heroセクション */
 .hero {

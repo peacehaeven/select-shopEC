@@ -227,6 +227,7 @@ export default function OrdersPage() {
                   value={trackingNumber}
                   onChange={(e) => setTrackingNumber(e.target.value)}
                   placeholder="例: 1234-5678-9999"
+                  maxLength={50}
                 />
               </div>
 
