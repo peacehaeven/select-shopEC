@@ -122,6 +122,6 @@
   transition: transform 0.2s;
 }
 
-.heroCtaButton:hover {
+.heroCtaLabel:hover {
   transform: scale(1.05);
 }
