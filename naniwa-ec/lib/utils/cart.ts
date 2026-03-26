@@ -32,7 +32,7 @@ export function addToCart(product: { id: string; name: string; price: number; st
   const existing = items.find(item => item.product_id === product.id)
   const currentQty = existing ? existing.quantity : 0
   if (currentQty >= product.stock) {
-    return { items, error: `「${product.name}」は在庫上限（${product.stock}個）に達しています。` }
+    return { items, error: 'ご注文可能な数量に達しています。' }
   }
   if (existing) {
     existing.quantity += 1

@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react"
 import { addProduct, updateProduct, deleteProduct } from "@/lib/actions"
-import { taxIncluded, formatPrice } from "@/lib/utils/price"
+import { taxIncluded, formatPrice, MAX_PRICE, MAX_STOCK } from "@/lib/utils/price"
 import { logout } from "@/lib/actions"
 
 type Product = {
@@ -47,8 +47,10 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
     if (!formName.trim()) return "商品名を入力してください。"
     const price = Number(formPrice)
     if (!Number.isInteger(price) || price < 0) return "価格は0以上の整数を入力してください。"
+    if (price > MAX_PRICE) return `価格は${MAX_PRICE.toLocaleString()}円以下で入力してください。`
     const stock = Number(formStock)
     if (!Number.isInteger(stock) || stock < 0) return "在庫数は0以上の整数を入力してください。"
+    if (stock > MAX_STOCK) return `在庫数は${MAX_STOCK.toLocaleString()}個以下で入力してください。`
     return null
   }
 
