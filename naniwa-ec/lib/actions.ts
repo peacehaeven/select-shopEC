@@ -79,5 +79,6 @@ export async function cancelOrder(orderId: string) {
   const { error } = await supabase.rpc('cancel_order', { p_order_id: orderId })
   if (error) return { error: error.message }
   revalidatePath('/admin/orders')
+  revalidatePath('/admin/products')
   return { error: null }
 }

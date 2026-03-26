@@ -1,3 +1,5 @@
+import { MAX_CART_QUANTITY } from './price'
+
 const CART_KEY = 'naniwa_cart'
 export const SHIPPING_FEE = 800
 
@@ -31,7 +33,7 @@ export function addToCart(product: { id: string; name: string; price: number; st
   const items = getCart()
   const existing = items.find(item => item.product_id === product.id)
   const currentQty = existing ? existing.quantity : 0
-  if (currentQty >= product.stock) {
+  if (currentQty >= product.stock || currentQty >= MAX_CART_QUANTITY) {
     return { items, error: 'ご注文可能な数量に達しています。' }
   }
   if (existing) {
@@ -54,7 +56,7 @@ export function updateQuantity(productId: string, quantity: number): CartItem[] 
   const items = getCart()
   const item = items.find(i => i.product_id === productId)
   if (item) {
-    item.quantity = Math.max(1, Math.min(quantity, item.stock))
+    item.quantity = Math.max(1, Math.min(quantity, item.stock, MAX_CART_QUANTITY))
   }
   saveCart(items)
   return items
