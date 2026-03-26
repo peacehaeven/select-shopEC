@@ -91,6 +91,7 @@ main {
   justify-content: center;
   color: var(--muted);
   font-size: 12px;
+  visibility: hidden;
 }
 .product-name { font-size: 15px; font-weight: 500; margin-bottom: 4px; }
 .product-price { color: var(--ink); font-size: 15px; margin-bottom: 12px; }
