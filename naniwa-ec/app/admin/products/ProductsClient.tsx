@@ -138,7 +138,7 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
                 <tr key={p.id}>
                   <td>{p.name}</td>
                   <td>{formatPrice(p.price)}</td>
-                  <td>{p.stock === 0 ? <span className="badge-sold-out">売り切れ</span> : p.stock}</td>
+                  <td>{p.stock}</td>
                   <td style={{ display: "flex", gap: "8px" }}>
                     <button className="btn btn-outline" style={{ padding: "4px 12px", fontSize: "12px" }} onClick={() => openEdit(p)}>編集</button>
                     <button className="btn btn-outline" style={{ padding: "4px 12px", fontSize: "12px", color: "#c00", borderColor: "#c00" }} onClick={() => handleDelete(p.id, p.name)}>削除</button>
