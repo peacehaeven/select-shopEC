@@ -1,15 +1,21 @@
 /* カート全体のレイアウト */
 .cart-layout {
   display: grid;
-  grid-template-columns: 1fr 240px; /* メインとサイドバー */
+  grid-template-columns: 1fr 260px;
   gap: 32px;
   align-items: start;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .cart-layout {
-    grid-template-columns: 1fr; /* スマホでは縦並び */
+    grid-template-columns: 1fr;
   }
+}
+
+/* テーブルラッパー（横スクロール対応） */
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* テーブルスタイル */
@@ -18,13 +24,14 @@ table {
   border-collapse: collapse;
   font-size: 14px;
   table-layout: fixed;
+  min-width: 480px;
 }
 
-th:nth-child(1), td:nth-child(1) { width: 40%; } /* 商品名：広く取る */
-th:nth-child(2), td:nth-child(2) { width: 15%; text-align: right; } /* 単価 */
-th:nth-child(3), td:nth-child(3) { width: 24%; text-align: center; } /* 数量 */
-th:nth-child(4), td:nth-child(4) { width: 15%; text-align: right; } /* 小計 */
-th:nth-child(5), td:nth-child(5) { width: 5%; text-align: center; }  /* 削除ボタン */
+th:nth-child(1), td:nth-child(1) { width: 35%; }
+th:nth-child(2), td:nth-child(2) { width: 17%; text-align: right; }
+th:nth-child(3), td:nth-child(3) { width: 22%; text-align: center; }
+th:nth-child(4), td:nth-child(4) { width: 17%; text-align: right; }
+th:nth-child(5), td:nth-child(5) { width: 9%; text-align: center; }
 
 th {
   background-color: #f8f9fa;
@@ -37,7 +44,7 @@ th {
 }
 
 td {
-  padding: 24px 16px;
+  padding: 20px 16px;
   border-bottom: 1px solid #f0f0f0;
   vertical-align: middle;
   word-break: break-all;
@@ -47,26 +54,50 @@ td {
 .qty-control {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
   width: fit-content;
-  padding: 4px 8px;
+  padding: 4px 6px;
 }
 
 .qty-control button {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
   color: #333;
-  padding: 0 8px;
+  padding: 0 6px;
+  line-height: 1;
+}
+
+.qty-control button:hover {
+  color: #000;
 }
 
 .qty-control span {
   font-weight: 600;
   min-width: 20px;
   text-align: center;
+  font-size: 14px;
+}
+
+/* 削除ボタン */
+.remove-btn {
+  background-color: #f1f3f5;
+  border: none;
+  color: #adb5bd;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.remove-btn:hover {
+  background-color: #fff5f5;
+  color: #fa5252;
 }
 
 /* フォームグループ（お届け先） */
@@ -89,11 +120,12 @@ td {
   border-radius: 6px;
   font-size: 14px;
   transition: border-color 0.2s;
+  box-sizing: border-box;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #333; /* フォーカス時に少し濃く */
+  border-color: #333;
   background-color: #fff;
 }
 
@@ -117,20 +149,6 @@ td {
   color: #333;
 }
 
-/* 削除ボタン */
-.remove-btn {
-  background: none;
-  border: none;
-  color: #999;
-  text-decoration: underline;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.remove-btn:hover {
-  color: #d9534f;
-}
-
 /* 発送目安のテキスト */
 .card p {
   font-size: 12px;
@@ -139,59 +157,92 @@ td {
   margin-top: 16px;
 }
 
-.remove-btn {
-  background-color: #f1f3f5;
-  border: none;
-  color: #adb5bd;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 11px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.remove-btn:hover {
-  background-color: #fff5f5; /* ほんのり赤く */
-  color: #fa5252;             /* 文字も赤く */
-}
-
-/* 注文するボタンの基本スタイル */
+/* 注文するボタン */
 .btn-primary {
   display: block;
   width: 100%;
-  max-width: 280px; /* サイドバーに収まるサイズ */
-  margin: 0 auto;
   padding: 16px 24px;
-  background-color: #333; /* 高級感のあるマットブラック */
-  color: #ffffff !important; /* リンクの青色を強制上書き */
+  background-color: #333;
+  color: #ffffff !important;
   text-align: center;
-  text-decoration: none !important; /* 下線を消す */
+  text-decoration: none !important;
   font-size: 16px;
   font-weight: bold;
   border-radius: 8px;
   border: none;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 少し浮かせて「押せる」感を出す */
+  transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
 }
 
-/* ホバー（マウスを乗せた時）の反応 */
 .btn-primary:hover {
   background-color: #555;
-  transform: translateY(-2px); /* 少し浮き上がるアニメーション */
+  transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   text-decoration: none;
 }
 
-/* クリックした瞬間（押し込んだ感） */
 .btn-primary:active {
   transform: translateY(0);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* カートが空などの無効状態用（必要であれば） */
 .btn-primary:disabled {
   background-color: #ccc;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
+}
+
+/* モバイル：テーブルをカード形式に変換 */
+@media (max-width: 600px) {
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  tr {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    padding: 4px 0;
+  }
+
+  td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid #f5f5f5;
+    text-align: right !important;
+    word-break: break-word;
+  }
+
+  td:last-child {
+    border-bottom: none;
+  }
+
+  td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    font-size: 12px;
+    color: #888;
+    text-align: left;
+    flex-shrink: 0;
+    margin-right: 12px;
+  }
+
+  .qty-control {
+    justify-content: flex-end;
+  }
 }

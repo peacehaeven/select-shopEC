@@ -96,38 +96,40 @@ export default function CartPage() {
           {/* カート商品一覧 */}
           <div className="card" style={{ padding: 0 }}>
             {items.length > 0 ? (
-              <table>
-                <thead>
-                  <tr>
-                    <th>商品</th>
-                    <th style={{ textAlign: "right" }}>単価（税込）</th>
-                    <th style={{ textAlign: "center" }}>数量</th>
-                    <th style={{ textAlign: "right" }}>小計（税込）</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((item) => (
-                    <tr key={item.product_id}>
-                      <td>{item.name}</td>
-                      <td style={{ textAlign: "right" }}>{formatPrice(taxIncluded(item.price))}</td>
-                      <td style={{ textAlign: "center" }}>
-                        <div className="qty-control">
-                          <button type="button" onClick={() => updateQuantity(item.product_id, item.quantity - 1)}>−</button>
-                          <span>{item.quantity}</span>
-                          <button type="button" onClick={() => updateQuantity(item.product_id, item.quantity + 1)}>＋</button>
-                        </div>
-                      </td>
-                      <td style={{ textAlign: "right" }}>{formatPrice(taxIncluded(item.price) * item.quantity)}</td>
-                      <td>
-                        <button type="button" className="remove-btn" onClick={() => removeFromCart(item.product_id)}>
-                          削除
-                        </button>
-                      </td>
+              <div className="table-wrapper">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>商品</th>
+                      <th style={{ textAlign: "right" }}>単価（税込）</th>
+                      <th style={{ textAlign: "center" }}>数量</th>
+                      <th style={{ textAlign: "right" }}>小計（税込）</th>
+                      <th></th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {items.map((item) => (
+                      <tr key={item.product_id}>
+                        <td data-label="商品">{item.name}</td>
+                        <td data-label="単価（税込）" style={{ textAlign: "right" }}>{formatPrice(taxIncluded(item.price))}</td>
+                        <td data-label="数量" style={{ textAlign: "center" }}>
+                          <div className="qty-control">
+                            <button type="button" onClick={() => updateQuantity(item.product_id, item.quantity - 1)}>−</button>
+                            <span>{item.quantity}</span>
+                            <button type="button" onClick={() => updateQuantity(item.product_id, item.quantity + 1)}>＋</button>
+                          </div>
+                        </td>
+                        <td data-label="小計（税込）" style={{ textAlign: "right" }}>{formatPrice(taxIncluded(item.price) * item.quantity)}</td>
+                        <td data-label="">
+                          <button type="button" className="remove-btn" onClick={() => removeFromCart(item.product_id)}>
+                            削除
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             ) : (
               <div style={{ padding: "40px", textAlign: "center" }}>
                 <p>カートに商品が入っていません。</p>

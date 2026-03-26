@@ -80,24 +80,28 @@ export default function OrdersPage() {
     setLoading(true)
     setErrorMsg("")
 
-    const res = await fetch("/api/ship", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        order_id: shipSelectOrder.id,
-        carrier,
-        tracking_number: trackingNumber,
-      }),
-    })
+    try {
+      const res = await fetch("/api/ship", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          order_id: shipSelectOrder.id,
+          carrier,
+          tracking_number: trackingNumber,
+        }),
+      })
 
-    setLoading(false)
-
-    if (res.ok) {
-      setShipSelectOrder(null)
-      fetchOrders()
-    } else {
-      const { message } = await res.json() as { message: string }
-      setErrorMsg(message)
+      if (res.ok) {
+        setShipSelectOrder(null)
+        fetchOrders()
+      } else {
+        const { message } = await res.json() as { message: string }
+        setErrorMsg(message)
+      }
+    } catch {
+      setErrorMsg("通信エラーが発生しました。再度お試しください。")
+    } finally {
+      setLoading(false)
     }
   }
 
