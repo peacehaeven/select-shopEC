@@ -19,7 +19,7 @@
 .fallingTakoyaki {
   position: absolute;
   top: -50px;
-  animation: fall linear forwards;
+  animation: fall 4s linear infinite;
 }
 
 .fallingTakoImg {

@@ -1,29 +1,30 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import styles from "@/app/page.module.css"
 
+// JS setInterval を廃止し、CSS アニメーションのみで実装（再レンダリングなし）
+const TAKOYAKIS = [
+  { left: "5%",  delay: "0s"   },
+  { left: "15%", delay: "1.5s" },
+  { left: "28%", delay: "3.2s" },
+  { left: "40%", delay: "0.8s" },
+  { left: "52%", delay: "2.4s" },
+  { left: "63%", delay: "4.1s" },
+  { left: "75%", delay: "1.1s" },
+  { left: "88%", delay: "2.9s" },
+]
+
 export default function HeroSection() {
-  const [takoyakis, setTakoyakis] = useState<{ id: number; left: string; duration: string }[]>([])
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const newTakoyaki = {
-        id: Date.now(),
-        left: Math.random() * 90 + "%",
-        duration: (Math.random() * 3 + 2) + "s",
-      }
-      setTakoyakis((prev) => [...prev.slice(-15), newTakoyaki])
-    }, 800)
-    return () => clearInterval(interval)
-  }, [])
-
   return (
     <div className={styles.container}>
       {/* 背景アニメーションレイヤー */}
       <div className={styles.takoLayer}>
-        {takoyakis.map((tako) => (
-          <span key={tako.id} className={styles.fallingTakoyaki} style={{ left: tako.left, animationDuration: tako.duration }}>
+        {TAKOYAKIS.map((tako, i) => (
+          <span
+            key={i}
+            className={styles.fallingTakoyaki}
+            style={{ left: tako.left, animationDelay: tako.delay }}
+          >
             <img src="/images/falling-tako.png" alt="" className={styles.fallingTakoImg} />
           </span>
         ))}
