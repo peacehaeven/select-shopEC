@@ -31,7 +31,7 @@ export default function ProductCard({ id, name, price, stock }: Props) {
       <div className="img-placeholder">商品画像</div>
       {stock === 0 && <span className="badge-sold-out">売り切れ</span>}
       <p className="product-name">{name}</p>
-      <p className="product-price">{formatPrice(taxIncluded(price))}</p>
+      <p className="product-price">{formatPrice(taxIncluded(price))}<span className="tax-label">（税込）</span></p>
       {stock > 0 && stock <= 5 && <span className="badge-low-stock">残りわずか</span>}
       {stock > 0 ? (
         <button className="btn btn-primary" onClick={handleAdd}>カートに入れる</button>
