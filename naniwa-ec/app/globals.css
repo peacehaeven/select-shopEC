@@ -40,7 +40,13 @@ nav {
 .nav-cart { color: #fff; font-size: 13px; text-decoration: none; }
 
 /* Main */
-main { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+main {
+  position: relative;
+  z-index: 3;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
 
 /* Section title */
 .section-title {

@@ -1,13 +1,23 @@
-/* フッター全体のコンテナ */
+/* Footer */
 .footer {
-  background-color: #fafafa; /* ほんのりグレーで清潔感を */
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: rgba(250, 250, 250, 0.84);
+  backdrop-filter: blur(3px);
   padding: 60px 20px 40px;
   border-top: 1px solid #eeeeee;
   color: #333333;
   margin-top: auto;
+  z-index: 3;
 }
 
-/* 「ご利用案内」の見出しエリア */
+.footer > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Guide header */
 .guideHeader {
   text-align: center;
   margin-bottom: 40px;
@@ -27,17 +37,16 @@
   letter-spacing: 0.2em;
 }
 
-/* 各セクション（送料、支払いなど）の外枠 */
+/* Guide sections */
 .guideSection {
   max-width: 800px;
   margin: 30px auto 30px;
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  overflow: hidden; /* 角丸からはみ出さないように */
+  overflow: hidden;
 }
 
-/* セクションのタイトル部分（送料・配送について等） */
 .sectionTitleBox {
   background-color: #f0f0f0;
   padding: 12px 20px;
@@ -49,8 +58,6 @@
   border-bottom: 1px solid #e0e0e0;
 }
 
-
-/* セクションの中身 */
 .sectionContent {
   padding: 20px;
   line-height: 1.8;
@@ -66,16 +73,7 @@
   margin-bottom: 0;
 }
 
-/* コピーライト */
-.copyright {
-  display: block;
-  text-align: center;
-  margin-top: 50px;
-  font-size: 11px;
-  color: #aaaaaa;
-  letter-spacing: 0.05em;
-}
-
+/* Shop info */
 .shopInfoContainer {
   max-width: 800px;
   margin: 60px auto 0;
@@ -102,7 +100,9 @@
   font-size: 14px;
 }
 
-.shopInfoRow:last-child { border-bottom: none; }
+.shopInfoRow:last-child {
+  border-bottom: none;
+}
 
 .shopInfoRow .label {
   width: 150px;
@@ -121,10 +121,12 @@
   margin-top: 4px;
 }
 
+/* Copyright */
 .copyright {
   display: block;
   text-align: center;
   margin-top: 50px;
   font-size: 11px;
   color: #aaaaaa;
+  letter-spacing: 0.05em;
 }
