@@ -290,7 +290,7 @@ export default function CartPage() {
                       type="text"
                       value={postalCode}
                       onChange={handlePostalCodeChange}
-                      style={{ width: "120px" }}
+                      style={{ width: "220px" }}
                       placeholder="530-0001"
                     />
                   </div>
@@ -311,7 +311,7 @@ export default function CartPage() {
                       type="text"
                       value={phoneNumber}
                       onChange={handlePhoneNumberChange}
-                      style={{ width: "160px" }}
+                      style={{ width: "220px" }}
                       placeholder="09000000000"
                     />
                   </div>
