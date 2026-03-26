@@ -28,6 +28,9 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 .nav-logo { color: #fff; font-family: 'Noto Serif JP', serif; font-size: 18px; }
 .nav-logo span { color: #fff; }
