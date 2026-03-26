@@ -38,7 +38,7 @@ export async function createOrder(input: OrderInput) {
         }
 
         if (product.stock < input.quantity) {
-            return { success: false, message: `在庫不足です（残り${product.stock}個）` };
+            return { success: false, message: `在庫不足です。` };
         }
 
         // 2. orders テーブルに注文ヘッダーを作成

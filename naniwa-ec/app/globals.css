@@ -119,6 +119,15 @@ main { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
   border-radius: 2px;
   margin-bottom: 8px;
 }
+.badge-low-stock {
+  display: inline-block;
+  background: #e67e22;
+  color: #fff;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 2px;
+  margin-bottom: 8px;
+}
 .badge-featured {
   display: inline-block;
   background: #555;

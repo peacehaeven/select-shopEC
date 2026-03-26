@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 const TRACKING_URLS: Record<string, string> = {
   'ヤマト運輸': 'https://jizen.kuronekoyamato.co.jp/jizen/servlet/crjz.b.NQ0010?id=',
   '佐川急便': 'https://k2k.sagawa-exp.co.jp/p/web/okurijosearch.do?okurijoNo=',
@@ -46,6 +44,12 @@ export async function POST(request: NextRequest) {
   }
 
   // 3. メール送信
+  if (!process.env.RESEND_API_KEY) {
+    return NextResponse.json({ message: '発送処理が完了しました（メール未設定のため送信スキップ）' }, { status: 200 })
+  }
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
+
   const trackingUrl = TRACKING_URLS[carrier]
     ? `${TRACKING_URLS[carrier]}${tracking_number}`
     : null
