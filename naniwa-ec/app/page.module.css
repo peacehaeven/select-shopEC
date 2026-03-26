@@ -1,0 +1,127 @@
+.container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #fff;
+}
+
+/* たこ焼きレイヤー：一番手前 */
+.takoLayer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.fallingTakoyaki {
+  position: absolute;
+  top: -50px;
+  animation: fall linear forwards;
+}
+
+.fallingTakoImg {
+  width: 35px;
+  opacity: 0.8;
+}
+
+@keyframes fall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
+
+/* Heroセクション */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* 背景：2枚を左右に並べる */
+.heroBackgroundGrid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 左右に1つずつ */
+  z-index: 1;
+}
+
+.bgImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.7;
+}
+
+/* 中央のカード */
+.heroOverlayContent {
+  position: relative;
+  z-index: 10;
+  width: 90%;
+  max-width: 650px;
+}
+
+.textGlassCard {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  padding: 4rem 2rem;
+  border-radius: 24px;
+  text-align: center;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.heroBadge {
+  color: #333;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.heroTitle {
+  margin-bottom: 1.5rem;
+}
+
+.heroEnglishText {
+  display: block;
+  font-size: clamp(3rem, 10vw, 5.5rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #000;
+}
+
+.heroSubText {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-top: 0.5rem;
+}
+
+.heroCopy {
+  color: #444;
+  margin-bottom: 2.5rem;
+}
+
+.heroCtaLabel {
+  background-color: #f97316;
+  color: white;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: 2px solid #000; /* スクショのような黒枠 */
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.heroCtaButton:hover {
+  transform: scale(1.05);
+}
