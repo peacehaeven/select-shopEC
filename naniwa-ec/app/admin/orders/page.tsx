@@ -60,6 +60,15 @@ function getStatusLabel(status: Order["status"]) {
   return "キャンセル済み"
 }
 
+function normalizeTrackingNumber(value: string) {
+  return value
+    .replace(/[０-９Ａ-Ｚａ-ｚ]/g, (char) =>
+      String.fromCharCode(char.charCodeAt(0) - 0xfee0),
+    )
+    .replace(/[‐－―ーｰ]/g, "-")
+    .replace(/[^0-9A-Za-z-]/g, "")
+}
+
 export default function OrdersPage() {
   const supabase = createClient()
 
@@ -274,7 +283,7 @@ export default function OrdersPage() {
                 <label>追跡番号</label>
                 <input
                   value={trackingNumber}
-                  onChange={(e) => setTrackingNumber(e.target.value)}
+                  onChange={(e) => setTrackingNumber(normalizeTrackingNumber(e.target.value))}
                   placeholder="例: 1234-5678-9999"
                   maxLength={50}
                 />
