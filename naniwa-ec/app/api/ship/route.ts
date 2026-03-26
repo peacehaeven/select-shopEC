@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     .from('orders')
     .update({ status: 'shipped', carrier, tracking_number })
     .eq('id', order_id)
-    .select('order_number, guest_email, shipping_name')
+    .select('order_number, guest_email, shipping_name, subtotal, shipping_fee, total, order_items(product_name, unit_price, quantity)')
     .single()
 
   if (updateError) {
@@ -54,11 +54,53 @@ export async function POST(request: NextRequest) {
     ? `追跡URL: ${trackingUrl}`
     : `追跡番号: ${tracking_number}`
 
+  const toAddress = process.env.RESEND_TEST_TO || order.guest_email
+
+  const items = (order.order_items as { product_name: string; unit_price: number; quantity: number }[]) ?? []
+  const itemLines = items.map(
+    (item) => `  ・${item.product_name}　¥${item.unit_price.toLocaleString()} × ${item.quantity}点　= ¥${(item.unit_price * item.quantity).toLocaleString()}`
+  ).join('\n')
+
+  const emailText = [
+    `${order.shipping_name} 様`,
+    '',
+    'この度はなにわセレクトショップをご利用いただき、誠にありがとうございます。',
+    'ご注文商品を発送いたしましたのでお知らせします。',
+    '',
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '【ご注文内容】',
+    `注文番号: ${order.order_number}`,
+    '',
+    itemLines,
+    '',
+    `小計:      ¥${(order.subtotal as number).toLocaleString()}`,
+    `送料:      ¥${(order.shipping_fee as number).toLocaleString()}`,
+    `合計:      ¥${(order.total as number).toLocaleString()}`,
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '【配送情報】',
+    `配送業者: ${carrier}`,
+    trackingLine,
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '【キャンセルについて】',
+    '商品発送後のキャンセル・返品はお受けできません。',
+    'あらかじめご了承ください。',
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '',
+    'ご不明な点がございましたら、下記までお問い合わせください。',
+    '',
+    '■ なにわセレクトショップ',
+    '  運営責任者: 浪速 太郎（なにわ たろう）',
+    '  所在地:     〒540-0032 大阪府大阪市中央区天満橋京町 1-1',
+    '  電話番号:   06-0141-1539',
+    '  受付時間:   10:00〜18:00（土日祝を除く）',
+    '  メール:     support@naniwa-select.example.com',
+  ].join('\n')
+
   const { error: mailError } = await resend.emails.send({
-    from: 'naniwa-select@resend.dev',
-    to: order.guest_email,
+    from: process.env.RESEND_FROM ?? 'naniwa-select@resend.dev',
+    to: toAddress,
     subject: '【なにわセレクトショップ】ご注文商品を発送しました',
-    text: `${order.shipping_name} 様\n\nご注文商品を発送いたしました。\n\n注文番号: ${order.order_number}\n配送業者: ${carrier}\n${trackingLine}\n\nなにわセレクトショップ`,
+    text: emailText,
   })
 
   if (mailError) {

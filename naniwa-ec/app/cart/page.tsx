@@ -7,6 +7,7 @@ import { useCart } from "@/app/components/CartProvider"
 import { taxIncluded, formatPrice } from "@/lib/utils/price"
 import { SHIPPING_FEE } from "@/lib/utils/cart"
 import { createAnonClient } from "@/lib/supabase/client"
+import "./cart.css"
 
 export default function CartPage() {
   const router = useRouter()
@@ -119,7 +120,7 @@ export default function CartPage() {
                       </td>
                       <td style={{ textAlign: "right" }}>{formatPrice(taxIncluded(item.price) * item.quantity)}</td>
                       <td>
-                        <button type="button" className="btn btn-outline" style={{ padding: "4px 10px", fontSize: "12px" }} onClick={() => removeFromCart(item.product_id)}>
+                        <button type="button" className="remove-btn" onClick={() => removeFromCart(item.product_id)}>
                           削除
                         </button>
                       </td>

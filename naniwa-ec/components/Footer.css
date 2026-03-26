@@ -1,0 +1,130 @@
+/* フッター全体のコンテナ */
+.footer {
+  background-color: #fafafa; /* ほんのりグレーで清潔感を */
+  padding: 60px 20px 40px;
+  border-top: 1px solid #eeeeee;
+  color: #333333;
+  margin-top: auto;
+}
+
+/* 「ご利用案内」の見出しエリア */
+.guideHeader {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.guideTitle {
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  margin-bottom: 4px;
+}
+
+.guideSubTitle {
+  font-size: 12px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+/* 各セクション（送料、支払いなど）の外枠 */
+.guideSection {
+  max-width: 800px;
+  margin: 30px auto 30px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden; /* 角丸からはみ出さないように */
+}
+
+/* セクションのタイトル部分（送料・配送について等） */
+.sectionTitleBox {
+  background-color: #f0f0f0;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  font-size: 14px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+
+/* セクションの中身 */
+.sectionContent {
+  padding: 20px;
+  line-height: 1.8;
+  font-size: 14px;
+  color: #555;
+}
+
+.sectionContent p {
+  margin-bottom: 8px;
+}
+
+.sectionContent p:last-child {
+  margin-bottom: 0;
+}
+
+/* コピーライト */
+.copyright {
+  display: block;
+  text-align: center;
+  margin-top: 50px;
+  font-size: 11px;
+  color: #aaaaaa;
+  letter-spacing: 0.05em;
+}
+
+.shopInfoContainer {
+  max-width: 800px;
+  margin: 60px auto 0;
+  padding-top: 40px;
+  border-top: 1px solid #ddd;
+}
+
+.shopInfoTitle {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
+  letter-spacing: 0.1em;
+}
+
+.shopInfoContent {
+  background-color: transparent;
+}
+
+.shopInfoRow {
+  display: flex;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.shopInfoRow:last-child { border-bottom: none; }
+
+.shopInfoRow .label {
+  width: 150px;
+  font-weight: bold;
+  color: #666;
+}
+
+.shopInfoRow .value {
+  flex: 1;
+  color: #333;
+}
+
+.shopInfoRow .note {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.copyright {
+  display: block;
+  text-align: center;
+  margin-top: 50px;
+  font-size: 11px;
+  color: #aaaaaa;
+}
