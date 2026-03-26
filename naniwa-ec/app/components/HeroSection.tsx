@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useRef } from "react"
 import styles from "@/app/page.module.css"
 
 const TAKO_SIZE = 30
