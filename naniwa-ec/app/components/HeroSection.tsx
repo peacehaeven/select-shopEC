@@ -46,7 +46,11 @@ export default function HeroSection() {
               <span className={styles.heroSubText}>なにわセレクトショップ</span>
             </h2>
             <p className={styles.heroCopy}>ええもん、うまいもん。大阪の日常を、あなたに。</p>
-            <div className={styles.heroCtaLabel}>
+            <div
+              className={styles.heroCtaLabel}
+              style={{ cursor: "pointer" }}
+              onClick={() => document.getElementById("product-list")?.scrollIntoView({ behavior: "smooth" })}
+            >
               大阪のこだわり特産品を見る↓
             </div>
           </div>

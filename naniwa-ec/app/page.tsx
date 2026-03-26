@@ -14,7 +14,7 @@ export default async function TopPage() {
   return (
     <>
       <HeroSection />
-      <main>
+      <main id="product-list">
         <h2 className="section-title">商品一覧</h2>
         <div className="product-grid">
           {(products ?? []).map((p) => (

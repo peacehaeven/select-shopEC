@@ -21,6 +21,7 @@ export default function CartPage() {
   const [cardNumber, setCardNumber] = useState("")
   const [errorMessage, setErrorMessage] = useState("")
   const [loading, setLoading] = useState(false)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
 
   // 入力フォーマット関数
   const handlePostalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,8 +48,8 @@ export default function CartPage() {
   const shipping = items.length > 0 ? SHIPPING_FEE : 0
   const total = subtotal + shipping
 
-  // 注文処理
-  const handleOrder = async () => {
+  // バリデーション → 確認モーダル表示
+  const handleOrder = () => {
     setErrorMessage("")
 
     if (items.length === 0) {
@@ -56,7 +57,6 @@ export default function CartPage() {
       return
     }
 
-    // バリデーション
     if (!customerName.trim()) { setErrorMessage("お名前が未入力です。"); return }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(customerEmail)) { setErrorMessage("有効なメールアドレスを入力してください。"); return }
@@ -65,6 +65,13 @@ export default function CartPage() {
     if (!phoneNumber.trim()) { setErrorMessage("電話番号が未入力です。"); return }
     const rawCard = cardNumber.replace(/\s/g, "")
     if (rawCard.length !== 16) { setErrorMessage("カード番号は16桁の数字で入力してください。"); return }
+
+    setShowConfirmModal(true)
+  }
+
+  // 確認後の実際の注文処理
+  const handleConfirmOrder = async () => {
+    setShowConfirmModal(false)
     setLoading(true)
 
     const supabase = createAnonClient()
@@ -90,6 +97,30 @@ export default function CartPage() {
 
   return (
     <main>
+      {showConfirmModal && (
+        <div className="modal-overlay">
+          <div>
+            <h3>注文内容のご確認</h3>
+            <p>ご注文前に以下をご確認ください。</p>
+            <ul style={{ textAlign: "left", fontSize: "13px", lineHeight: 2, paddingLeft: "20px", margin: "8px 0 16px" }}>
+              <li>商品は<strong>３営業日以内</strong>に発送いたします（土日祝日を除く）。</li>
+              <li>お届けは地域や交通状況により前後する場合がございます。</li>
+              <li>キャンセルご希望の場合は、注文確認メールに記載のメールアドレスまでご連絡ください。</li>
+              <li><strong>発送完了後はキャンセルできません</strong>のでご注意ください。</li>
+              <li>注文確認メールは送信されません。<strong>注文番号を必ずお控えください。</strong></li>
+            </ul>
+            <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+              <button className="btn btn-primary" onClick={handleConfirmOrder}>
+                注文を確定する
+              </button>
+              <button className="btn" onClick={() => setShowConfirmModal(false)}>
+                戻る
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <h2 className="section-title">カート</h2>
       <div className="cart-layout">
         <div>
