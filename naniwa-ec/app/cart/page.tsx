@@ -135,14 +135,10 @@ export default function CartPage() {
                   margin: "8px 0 12px",
                 }}
               >
-                <li>
-                  商品は<strong>ご注文確定後</strong>に発送いたします。
-                </li>
-                <li>お届け日は地域や天候状況により前後する場合がございます。</li>
-                <li>キャンセルをご希望の場合は、お問い合わせメールにてご連絡ください。</li>
-                <li>
-                  <strong>配送準備後のキャンセルはできません</strong>のでご了承ください。
-                </li>
+                <li>商品は<strong>３営業日以内</strong>に発送いたします（土日祝日を除く）。</li>
+                <li>お届けは地域や交通状況により前後する場合がございます。</li>
+                <li>キャンセルご希望の場合は、電話かメールにてご連絡ください。</li>
+                <li><strong>発送完了後はキャンセルできません</strong>のでご注意ください。</li>
               </ul>
               <div
                 style={{
@@ -162,7 +158,7 @@ export default function CartPage() {
                 <span style={{ fontSize: "13px", lineHeight: 1.7 }}>
                   注文確認メールは送信されません。
                   <br />
-                  <strong style={{ fontSize: "14px" }}>注文内容をお控えください。</strong>
+                  <strong style={{ fontSize: "14px" }}>注文確定後の注文番号を必ずお控えください。</strong>
                 </span>
               </div>
               <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
