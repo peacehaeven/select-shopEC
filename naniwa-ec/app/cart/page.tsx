@@ -32,7 +32,8 @@ export default function CartPage() {
   }
 
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/\D/g, "")
+    let val = e.target.value.replace(/\D/g, "")
+    if (val.length > 11) val = val.slice(0, 11)
     setPhoneNumber(val)
   }
 
@@ -62,7 +63,7 @@ export default function CartPage() {
     if (!emailRegex.test(customerEmail)) { setErrorMessage("有効なメールアドレスを入力してください。"); return }
     if (postalCode.length !== 8) { setErrorMessage("郵便番号は7桁の数字で入力してください。"); return }
     if (!address.trim()) { setErrorMessage("住所が未入力です。"); return }
-    if (!phoneNumber.trim()) { setErrorMessage("電話番号が未入力です。"); return }
+    if (phoneNumber.length < 10 || phoneNumber.length > 11) { setErrorMessage("電話番号は10〜11桁の数字で入力してください。"); return }
     const rawCard = cardNumber.replace(/\s/g, "")
     if (rawCard.length !== 16) { setErrorMessage("カード番号は16桁の数字で入力してください。"); return }
 
@@ -102,13 +103,30 @@ export default function CartPage() {
           <div>
             <h3>注文内容のご確認</h3>
             <p>ご注文前に以下をご確認ください。</p>
-            <ul style={{ textAlign: "left", fontSize: "13px", lineHeight: 2, paddingLeft: "20px", margin: "8px 0 16px" }}>
+            <ul style={{ textAlign: "left", fontSize: "13px", lineHeight: 2, paddingLeft: "20px", margin: "8px 0 12px" }}>
               <li>商品は<strong>３営業日以内</strong>に発送いたします（土日祝日を除く）。</li>
               <li>お届けは地域や交通状況により前後する場合がございます。</li>
               <li>キャンセルご希望の場合は、電話かメールにてご連絡ください。</li>
               <li><strong>発送完了後はキャンセルできません</strong>のでご注意ください。</li>
-              <li style={{ listStyle: "none", marginLeft: "-20px", marginTop: "8px", padding: "10px 14px", backgroundColor: "#fff3cd", border: "2px solid #f0ad4e", borderRadius: "6px", color: "#856404", fontWeight: "bold", fontSize: "14px" }}>注文確認メールは送信されません。<br />注文番号を必ずお控えください。</li>
             </ul>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              margin: "0 0 16px",
+              padding: "12px 16px",
+              backgroundColor: "#fffbeb",
+              border: "1.5px solid #f59e0b",
+              borderLeft: "5px solid #f59e0b",
+              borderRadius: "8px",
+              color: "#92400e",
+            }}>
+              <span style={{ fontSize: "20px", flexShrink: 0 }}>⚠️</span>
+              <span style={{ fontSize: "13px", lineHeight: 1.7 }}>
+                注文確認メールは送信されません。<br />
+                <strong style={{ fontSize: "14px" }}>注文番号を必ずお控えください。</strong>
+              </span>
+            </div>
             <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
               <button className="btn btn-primary" onClick={handleConfirmOrder}>
                 注文を確定する
