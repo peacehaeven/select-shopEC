@@ -59,12 +59,16 @@ export async function updateProduct(id: string, formData: {
 
 export async function deleteProduct(id: string) {
   const supabase = await createClient()
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('products')
     .update({ deleted_at: new Date().toISOString() })
     .eq('id', id)
+    .is('deleted_at', null)
+    .select('id')
   if (error) return { error: error.message }
+  if (!data || data.length === 0) return { error: '削除に失敗しました（権限またはDBポリシーを確認してください）' }
   revalidatePath('/admin/products')
+  revalidatePath('/')
   return { error: null }
 }
 

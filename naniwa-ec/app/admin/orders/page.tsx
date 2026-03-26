@@ -94,6 +94,7 @@ export default function OrdersPage() {
       if (res.ok) {
         setShipSelectOrder(null)
         fetchOrders()
+        alert("発送済みにしました。")
       } else {
         const { message } = await res.json() as { message: string }
         setErrorMsg(message)

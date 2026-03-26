@@ -5,8 +5,6 @@ import type { NextRequest } from "next/server";
 export async function proxy(request: NextRequest) {
   const response = NextResponse.next({ request: { headers: request.headers } });
 
-  return response;
-
   // /admin/login は認証不要（ここで return しないと無限リダイレクト）
   if (request.nextUrl.pathname === "/admin/login") {
     return response;
@@ -28,20 +26,11 @@ export async function proxy(request: NextRequest) {
     }
   );
 
+  // セッションをリフレッシュし、未ログイン時はログインページへリダイレクト
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
-  }
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (!profile || profile.role !== "admin") {
-    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return response;
