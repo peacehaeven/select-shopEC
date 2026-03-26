@@ -1,8 +1,9 @@
 "use client"
+
 import { useEffect, useState } from "react"
+import { cancelOrder, logout } from "@/lib/actions"
 import { createClient } from "@/lib/supabase/client"
-import { cancelOrder } from "@/lib/actions"
-import { logout } from "@/lib/actions"
+import { taxIncluded } from "@/lib/utils/price"
 
 type OrderItem = {
   product_name: string
@@ -29,6 +30,35 @@ type Order = {
 }
 
 const CARRIERS = ["ヤマト運輸", "佐川急便", "ゆうパック", "その他"]
+
+function formatYen(value: number) {
+  return `¥${value.toLocaleString("ja-JP")}`
+}
+
+function getTaxIncludedUnitPrice(unitPrice: number) {
+  return taxIncluded(unitPrice)
+}
+
+function getTaxIncludedSubtotal(order: Order) {
+  if (order.order_items.length === 0) {
+    return taxIncluded(order.subtotal)
+  }
+
+  return order.order_items.reduce(
+    (sum, item) => sum + getTaxIncludedUnitPrice(item.unit_price) * item.quantity,
+    0,
+  )
+}
+
+function getTaxIncludedTotal(order: Order) {
+  return getTaxIncludedSubtotal(order) + order.shipping_fee
+}
+
+function getStatusLabel(status: Order["status"]) {
+  if (status === "pending") return "注文受付済み"
+  if (status === "shipped") return "発送済み"
+  return "キャンセル済み"
+}
 
 export default function OrdersPage() {
   const supabase = createClient()
@@ -94,13 +124,13 @@ export default function OrdersPage() {
       if (res.ok) {
         setShipSelectOrder(null)
         fetchOrders()
-        alert("発送済みにしました。")
+        alert("発送済みに更新しました。")
       } else {
-        const { message } = await res.json() as { message: string }
+        const { message } = (await res.json()) as { message: string }
         setErrorMsg(message)
       }
     } catch {
-      setErrorMsg("通信エラーが発生しました。再度お試しください。")
+      setErrorMsg("配送更新中にエラーが発生しました。時間をおいて再度お試しください。")
     } finally {
       setLoading(false)
     }
@@ -127,11 +157,15 @@ export default function OrdersPage() {
   return (
     <>
       <nav>
-        <span className="nav-logo">なにわセレクトショップ 管理</span>
+        <span className="nav-logo">なにわセレクトショップ 管理画面</span>
         <span className="nav-links">
           <a href="/">ショップへ戻る</a>
           <button
-            onClick={() => logout().then(() => { window.location.href = "/admin/login" })}
+            onClick={() =>
+              logout().then(() => {
+                window.location.href = "/admin/login"
+              })
+            }
             style={{ background: "none", border: "none", color: "#bbb", cursor: "pointer", fontSize: "13px" }}
           >
             ログアウト
@@ -141,7 +175,9 @@ export default function OrdersPage() {
 
       <main>
         <div className="admin-tabs">
-          <a href="/admin/orders" className="active">注文管理</a>
+          <a href="/admin/orders" className="active">
+            注文管理
+          </a>
           <a href="/admin/products">商品管理</a>
         </div>
 
@@ -149,75 +185,88 @@ export default function OrdersPage() {
 
         <div className="order-list">
           {orders.map((order) => (
-            <div
-              key={order.id}
-              className={`order-card is-${order.status}`}
-            >
-              {/* ヘッダー */}
+            <div key={order.id} className={`order-card is-${order.status}`}>
               <div>
                 <div>
-                  <span style={{ fontWeight: 600, fontFamily: "'Noto Serif JP', serif" }}>#{order.order_number}</span>
+                  <span style={{ fontWeight: 600, fontFamily: "'Noto Serif JP', serif" }}>
+                    #{order.order_number}
+                  </span>
                   <span style={{ color: "var(--muted)", fontSize: "12px", marginLeft: "12px" }}>
                     {new Date(order.created_at).toLocaleDateString("ja-JP")}
                   </span>
-                  <span style={{ marginLeft: "12px" }}>
-                    {order.status === "pending" && "注文受付済み"}
-                    {order.status === "shipped" && "発送済み"}
-                    {order.status === "cancelled" && "キャンセル済み"}
-                  </span>
+                  <span style={{ marginLeft: "12px" }}>{getStatusLabel(order.status)}</span>
                 </div>
-                <div style={{ fontWeight: 600 }}>¥{order.total.toLocaleString()}</div>
+                <div style={{ fontWeight: 600 }}>{formatYen(getTaxIncludedTotal(order))}</div>
               </div>
 
-              {/* 詳細 */}
-              <div style={{ padding: "16px 20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", fontSize: "13px" }}>
+              <div
+                style={{
+                  padding: "16px 20px",
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "12px",
+                  fontSize: "13px",
+                }}
+              >
                 <div>
                   <p style={{ color: "var(--muted)", marginBottom: "4px" }}>注文者情報</p>
                   <p>{order.shipping_name}</p>
                   <p>{order.guest_email}</p>
                   <p>{order.shipping_phone}</p>
-                  <p>〒{order.shipping_postal_code} {order.shipping_address}</p>
+                  <p>
+                    〒{order.shipping_postal_code} {order.shipping_address}
+                  </p>
                 </div>
+
                 <div>
                   <p style={{ color: "var(--muted)", marginBottom: "4px" }}>注文商品</p>
-                  {order.order_items.map((item, i) => (
-                    <p key={i}>{item.product_name}　¥{item.unit_price.toLocaleString()} × {item.quantity}</p>
+                  {order.order_items.map((item, index) => (
+                    <p key={index}>
+                      {item.product_name} {formatYen(getTaxIncludedUnitPrice(item.unit_price))} × {item.quantity}
+                    </p>
                   ))}
-                  <p style={{ marginTop: "8px", color: "var(--muted)" }}>小計 ¥{order.subtotal.toLocaleString()} + 送料 ¥{order.shipping_fee.toLocaleString()}</p>
+                  <p style={{ marginTop: "8px", color: "var(--muted)" }}>
+                    小計 {formatYen(getTaxIncludedSubtotal(order))} + 送料 {formatYen(order.shipping_fee)}
+                  </p>
                 </div>
               </div>
 
-              {/* 発送済み時の追跡情報 */}
               {order.status === "shipped" && (
                 <div style={{ padding: "0 20px 16px", fontSize: "13px", color: "var(--muted)" }}>
-                  {order.carrier}　追跡番号：{order.tracking_number}
+                  {order.carrier} / 追跡番号: {order.tracking_number}
                 </div>
               )}
 
-              {/* ボタン：pending のみ表示 */}
               {order.status === "pending" && (
                 <div style={{ padding: "0 20px 16px", display: "flex", gap: "8px" }}>
-                  <button className="btn btn-outline" onClick={() => setCancelSelectOrder(order)}>キャンセルする</button>
-                  <button className="btn btn-secondary" onClick={() => openShipModal(order)}>発送済みにする</button>
+                  <button className="btn btn-outline" onClick={() => setCancelSelectOrder(order)}>
+                    キャンセルする
+                  </button>
+                  <button className="btn btn-secondary" onClick={() => openShipModal(order)}>
+                    発送済みにする
+                  </button>
                 </div>
               )}
             </div>
           ))}
         </div>
 
-        {/* 発送情報入力モーダル */}
         {shipSelectOrder !== null && (
           <div className="modal-overlay" onClick={() => setShipSelectOrder(null)}>
             <div onClick={(e) => e.stopPropagation()}>
               <h3 style={{ fontFamily: "'Noto Serif JP', serif", marginBottom: "4px" }}>発送情報の入力</h3>
               <p style={{ color: "var(--muted)", fontSize: "13px", marginBottom: "24px" }}>
-                #{shipSelectOrder.order_number}　{shipSelectOrder.shipping_name} 様
+                #{shipSelectOrder.order_number} / {shipSelectOrder.shipping_name} 様
               </p>
 
               <div className="form-group">
                 <label>配送業者</label>
                 <select value={carrier} onChange={(e) => setCarrier(e.target.value)}>
-                  {CARRIERS.map((c) => <option key={c} value={c}>{c}</option>)}
+                  {CARRIERS.map((value) => (
+                    <option key={value} value={value}>
+                      {value}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -234,7 +283,9 @@ export default function OrdersPage() {
               {errorMsg && <p style={{ color: "#c00", fontSize: "13px", marginBottom: "16px" }}>{errorMsg}</p>}
 
               <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
-                <button className="btn btn-outline" onClick={() => setShipSelectOrder(null)}>キャンセル</button>
+                <button className="btn btn-outline" onClick={() => setShipSelectOrder(null)}>
+                  キャンセル
+                </button>
                 <button className="btn btn-secondary" onClick={handleShip} disabled={loading}>
                   {loading ? "処理中..." : "発送済みにする"}
                 </button>
@@ -243,20 +294,23 @@ export default function OrdersPage() {
           </div>
         )}
 
-        {/* キャンセル確認モーダル */}
         {cancelSelectOrder !== null && (
           <div className="modal-overlay" onClick={() => setCancelSelectOrder(null)}>
             <div onClick={(e) => e.stopPropagation()}>
               <h3 style={{ fontFamily: "'Noto Serif JP', serif", marginBottom: "4px" }}>注文をキャンセル</h3>
               <p style={{ color: "var(--muted)", fontSize: "13px", marginBottom: "8px" }}>
-                #{cancelSelectOrder.order_number}　{cancelSelectOrder.shipping_name} 様
+                #{cancelSelectOrder.order_number} / {cancelSelectOrder.shipping_name} 様
               </p>
-              <p style={{ fontSize: "13px", marginBottom: "24px" }}>※ キャンセル通知メールは送信されません。</p>
+              <p style={{ fontSize: "13px", marginBottom: "24px" }}>
+                キャンセル通知メールは送信されません。
+              </p>
 
               {errorMsg && <p style={{ color: "#c00", fontSize: "13px", marginBottom: "16px" }}>{errorMsg}</p>}
 
               <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
-                <button className="btn btn-outline" onClick={() => setCancelSelectOrder(null)}>戻る</button>
+                <button className="btn btn-outline" onClick={() => setCancelSelectOrder(null)}>
+                  戻る
+                </button>
                 <button className="btn btn-secondary" onClick={handleCancel} disabled={loading}>
                   {loading ? "処理中..." : "キャンセルする"}
                 </button>
