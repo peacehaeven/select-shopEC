@@ -21,12 +21,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const cart = getCart()
     setItems(cart)
-    setCartCount(cart.reduce((sum, i) => sum + i.quantity, 0))
+    setCartCount(cart.length)
   }, [])
 
   const refresh = useCallback((newItems: CartItem[]) => {
     setItems(newItems)
-    setCartCount(newItems.reduce((sum, i) => sum + i.quantity, 0))
+    setCartCount(newItems.length)
   }, [])
 
   const addToCart = useCallback((product: { id: string; name: string; price: number; stock: number }): string | undefined => {

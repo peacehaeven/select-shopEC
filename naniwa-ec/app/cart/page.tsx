@@ -105,9 +105,9 @@ export default function CartPage() {
             <ul style={{ textAlign: "left", fontSize: "13px", lineHeight: 2, paddingLeft: "20px", margin: "8px 0 16px" }}>
               <li>商品は<strong>３営業日以内</strong>に発送いたします（土日祝日を除く）。</li>
               <li>お届けは地域や交通状況により前後する場合がございます。</li>
-              <li>キャンセルご希望の場合は、注文確認メールに記載のメールアドレスまでご連絡ください。</li>
+              <li>キャンセルご希望の場合は、電話かメールにてご連絡ください。</li>
               <li><strong>発送完了後はキャンセルできません</strong>のでご注意ください。</li>
-              <li>注文確認メールは送信されません。<strong>注文番号を必ずお控えください。</strong></li>
+              <li style={{ listStyle: "none", marginLeft: "-20px", marginTop: "8px", padding: "10px 14px", backgroundColor: "#fff3cd", border: "2px solid #f0ad4e", borderRadius: "6px", color: "#856404", fontWeight: "bold", fontSize: "14px" }}>注文確認メールは送信されません。<br />注文番号を必ずお控えください。</li>
             </ul>
             <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
               <button className="btn btn-primary" onClick={handleConfirmOrder}>

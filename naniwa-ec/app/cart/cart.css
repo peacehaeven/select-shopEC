@@ -27,11 +27,11 @@ table {
   min-width: 480px;
 }
 
-th:nth-child(1), td:nth-child(1) { width: 35%; }
+th:nth-child(1), td:nth-child(1) { width: 32%; }
 th:nth-child(2), td:nth-child(2) { width: 17%; text-align: right; }
 th:nth-child(3), td:nth-child(3) { width: 22%; text-align: center; }
 th:nth-child(4), td:nth-child(4) { width: 17%; text-align: right; }
-th:nth-child(5), td:nth-child(5) { width: 9%; text-align: center; }
+th:nth-child(5), td:nth-child(5) { width: 12%; text-align: center; }
 
 th {
   background-color: #f8f9fa;

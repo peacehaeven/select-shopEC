@@ -72,7 +72,7 @@ export function clearCart(): void {
   localStorage.removeItem(CART_KEY)
 }
 
-/** カート内の合計個数 */
+/** カート内の商品種類数 */
 export function getCartCount(): number {
-  return getCart().reduce((sum, item) => sum + item.quantity, 0)
+  return getCart().length
 }
