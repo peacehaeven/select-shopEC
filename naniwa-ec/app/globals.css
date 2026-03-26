@@ -129,6 +129,7 @@ main {
   padding: 2px 8px;
   border-radius: 2px;
   margin-bottom: 8px;
+  display: none;
 }
 .badge-low-stock {
   display: inline-block;
