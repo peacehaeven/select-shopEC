@@ -100,7 +100,7 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
   return (
     <>
       <nav>
-        <span className="nav-logo">なにわセレクトショップ 管理</span>
+        <span className="nav-logo">なにわセレクトショップ 管理画面</span>
         <span className="nav-links">
           <a href="/">ショップへ戻る</a>
           <button
