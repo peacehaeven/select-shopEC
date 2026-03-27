@@ -28,7 +28,7 @@ export default function ProductCard({ id, name, price, stock }: Props) {
 
   return (
     <div className="product-card">
-      <div className="img-placeholder">商品画像</div>
+      <div className="img-placeholder">準備中</div>
       {stock === 0 && <span className="badge-sold-out">売り切れ</span>}
       <p className="product-name">{name}</p>
       <p className="product-price">{formatPrice(taxIncluded(price))}<span className="tax-label">（税込）</span></p>
