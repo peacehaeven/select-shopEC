@@ -373,6 +373,7 @@ footer {
   border-radius: 4px;
   cursor: pointer;
   font-family: 'Noto Sans JP', sans-serif;
+  margin-top: 20px;
 }
 .order-card > div:last-child > button:first-of-type:hover {
   background: #F5F5F5;
@@ -387,6 +388,7 @@ footer {
   border-radius: 4px;
   cursor: pointer;
   font-family: 'Noto Sans JP', sans-serif;
+  margin-top: 19px;
 }
 .order-card > div:last-child > button:last-of-type:hover { background: #111; }
 /* shipped / cancelled のテキスト */
