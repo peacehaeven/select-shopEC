@@ -1,0 +1,132 @@
+.container {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  padding: 2rem;
+}
+
+.hero {
+  height: 60vh; /* 画面の約60%の高さ */
+  background-color: #f9f3e6; 
+  background-image: radial-gradient(#d9cbb3 1px, transparent 1px);
+  background-size: 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 3rem; /* 下のコンテンツとの間隔 */
+}
+
+.heroInner {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.heroBadge {
+  writing-mode: vertical-rl;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #c04848;
+  border: 2px solid #c04848;
+  padding: 12px 6px;
+  letter-spacing: 0.2rem;
+  background-color: #fff; /* バッジを白くすると目立ちます */
+}
+
+.badgeLine {
+  height: 20px;
+  background-color: #c04848;
+  width: 2px;
+  margin: 8px 0;
+}
+
+.heroMainText {
+  display: block;
+  font-size: 4.5rem;
+  color: #e8a838;
+  font-weight: 900;
+  line-height: 1.2;
+  /* 文字の周りを白く縁取る（レトロ看板風） */
+  text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 4px 4px 0 #d9cbb3;
+}
+
+.heroSubText {
+  display: block;
+  font-size: 1.8rem;
+  color: #4a4a4a;
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+.heroCopy {
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  color: #555;
+  border-top: 1px dashed #ccc; /* 点線にするとレトロ可愛い */
+  padding-top: 1rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.card {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.cardContent {
+  flex-grow: 1; 
+}
+
+.highlightCard {
+  border: 2px solid #fbbf24;
+}
+
+.productName {
+  font-weight: bold;
+  font-size: 1.125rem;
+  color: #111827;
+}
+
+.price {
+  color: #dc2626;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.cartButton {
+  width: 100%;
+  padding: 10px;
+  background-color: transparent;
+  color: #333;
+  border: 1px solid #333;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: auto;
+}
+
+.cartButton:hover {
+  background-color: #ff4444; /* ホバーで少し暗くする */
+}
+
+
+
+
