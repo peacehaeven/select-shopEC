@@ -4,6 +4,7 @@ import { addProduct, updateProduct, deleteProduct } from "@/lib/actions"
 import { taxIncluded, formatPrice, MAX_PRICE, MAX_STOCK } from "@/lib/utils/price"
 import { logout } from "@/lib/actions"
 
+// 商品データの型定義
 type Product = {
   id: string
   name: string
@@ -11,20 +12,22 @@ type Product = {
   stock: number
 }
 
+// モーダルの表示状態（add: 新規登録, edit: 編集, null: 非表示）
 type ModalState =
   | { mode: "add" }
   | { mode: "edit"; product: Product }
   | null
 
 export default function ProductsClient({ initialProducts }: { initialProducts: Product[] }) {
-  const [products, setProducts] = useState<Product[]>(initialProducts)
-  const [modal, setModal] = useState<ModalState>(null)
-  const [formName, setFormName] = useState("")
-  const [formPrice, setFormPrice] = useState("")
-  const [formStock, setFormStock] = useState("")
-  const [errorMsg, setErrorMsg] = useState("")
-  const [loading, setLoading] = useState(false)
+  const [products, setProducts] = useState<Product[]>(initialProducts)  // 商品一覧のリスト
+  const [modal, setModal] = useState<ModalState>(null) // モーダルの開閉とモードの状態
+  const [formName, setFormName] = useState("")  // フォーム入力値：商品名
+  const [formPrice, setFormPrice] = useState("")  // フォーム入力値：価格
+  const [formStock, setFormStock] = useState("")  // フォーム入力値：在庫数
+  const [errorMsg, setErrorMsg] = useState("")  // バリデーションなどのエラーメッセージ
+  const [loading, setLoading] = useState(false)  // 通信中のローディング状態
 
+  // 新規追加モーダルを開く
   const openAdd = () => {
     setModal({ mode: "add" })
     setFormName("")
@@ -33,6 +36,7 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
     setErrorMsg("")
   }
 
+  // 編集モーダルを開く（p: 編集対象の商品）
   const openEdit = (p: Product) => {
     setModal({ mode: "edit", product: p })
     setFormName(p.name)
@@ -41,19 +45,24 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
     setErrorMsg("")
   }
 
-  const closeModal = () => setModal(null)
+  const closeModal = () => setModal(null)  // モーダルを閉じる
 
+  // 入力フォームのバリデーション（戻り値：エラーメッセージ or null）
   const validate = () => {
     if (!formName.trim()) return "商品名を入力してください。"
+
     const price = Number(formPrice)
     if (!Number.isInteger(price) || price < 0) return "価格は0以上の整数を入力してください。"
     if (price > MAX_PRICE) return `価格は${MAX_PRICE.toLocaleString()}円以下で入力してください。`
+
     const stock = Number(formStock)
     if (!Number.isInteger(stock) || stock < 0) return "在庫数は0以上の整数を入力してください。"
     if (stock > MAX_STOCK) return `在庫数は${MAX_STOCK.toLocaleString()}個以下で入力してください。`
+
     return null
   }
 
+  // フォームの送信処理（追加または更新）
   const handleSubmit = async () => {
     const err = validate()
     if (err) { setErrorMsg(err); return }
@@ -61,6 +70,7 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
     setLoading(true)
     setErrorMsg("")
 
+    // 送信用データの整形
     const data = {
       name: formName.trim(),
       price: Number(formPrice),
@@ -69,6 +79,7 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
     }
 
     let result: { error: string | null }
+    // モード（追加・編集）に合わせて処理を切り替える
     if (modal?.mode === "add") {
       result = await addProduct(data)
     } else if (modal?.mode === "edit") {
@@ -78,27 +89,28 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
     }
 
     setLoading(false)
-
-    if (result.error) {
-      setErrorMsg(result.error)
+    if (result.error) {  // APIエラーが発生した場合
+      setErrorMsg(result.error) // エラーメッセージを保存して画面に表示
     } else {
-      // 画面をリフレッシュして最新データを取得
-      window.location.reload()
+      window.location.reload()  // 追加・編集後はサーバー側で生成されたIDを含む最新データが必要なためリロード
     }
   }
 
+  // 商品の削除処理（id: 削除対象ID, name: 確認用名称）
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`「${name}」を削除しますか？`)) return
+    
     const result = await deleteProduct(id)
     if (result.error) {
       alert(`削除に失敗しました: ${result.error}`)
     } else {
-      setProducts(products.filter((p) => p.id !== id))
+      setProducts(products.filter((p) => p.id !== id))  // 削除成功：ローカルのステートからも除去して即座に反映
     }
   }
 
   return (
     <>
+      {/* --- ナビゲーション --- */}
       <nav>
         <span className="nav-logo">なにわセレクトショップ 管理画面</span>
         <span className="nav-links">
@@ -113,16 +125,19 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
       </nav>
 
       <main>
+        {/* タブ切り替え */}
         <div className="admin-tabs">
           <a href="/admin/orders">注文管理</a>
           <a href="/admin/products" className="active">商品管理</a>
         </div>
 
+        {/* ヘッダー */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
           <h2 className="section-title" style={{ marginBottom: 0 }}>商品一覧</h2>
           <button className="btn btn-secondary" onClick={openAdd}>＋ 商品を追加</button>
         </div>
 
+        {/* 商品一覧テーブル */}
         <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "4px" }}>
           <table>
             <thead>
@@ -150,7 +165,7 @@ export default function ProductsClient({ initialProducts }: { initialProducts: P
         </div>
       </main>
 
-      {/* 商品追加・編集モーダル */}
+      {/* --- 商品追加・編集モーダル --- */}
       {modal !== null && (
         <div className="modal-overlay" onClick={closeModal}>
           <div onClick={(e) => e.stopPropagation()}>
