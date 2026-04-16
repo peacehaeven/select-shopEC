@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useCart } from "@/context/CartContext";
+import { useCart } from "@/app/components/CartProvider";
 import "./Header.css";
 
 export default function Header() {
