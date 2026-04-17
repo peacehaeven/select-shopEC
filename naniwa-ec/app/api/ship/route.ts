@@ -1,7 +1,9 @@
+// 発送処理API：注文ステータスの更新と発送通知メールの送信を実行します
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { Resend } from 'resend'
 
+// 配送業者の追跡用URLベース
 const TRACKING_URLS: Record<string, string> = {
   'ヤマト運輸': 'https://jizen.kuronekoyamato.co.jp/jizen/servlet/crjz.b.NQ0010?id=',
   '佐川急便': 'https://k2k.sagawa-exp.co.jp/p/web/okurijosearch.do?okurijoNo=',
@@ -11,7 +13,7 @@ const TRACKING_URLS: Record<string, string> = {
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
 
-  // 1. adminチェック
+  // 1. ログインユーザーが管理者（admin）であることを確認
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
     return NextResponse.json({ message: '認証が必要です' }, { status: 401 })
@@ -21,6 +23,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: '管理者権限が必要です' }, { status: 403 })
   }
 
+  // 2. 管理画面で入力された「注文ID・配送業者・追跡番号」の確認
   const { order_id, carrier, tracking_number } = await request.json() as {
     order_id: string
     carrier: string
@@ -31,7 +34,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: '必須項目が不足しています' }, { status: 400 })
   }
 
-  // 2. DB更新
+  // 3. DBの注文情報を「発送済み」に更新
   const { data: order, error: updateError } = await supabase
     .from('orders')
     .update({ status: 'shipped', carrier, tracking_number })
@@ -43,13 +46,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ message: '発送情報の更新に失敗しました' }, { status: 500 })
   }
 
-  // 3. メール送信
+  // 4. 購入者への発送通知メール送信
   if (!process.env.RESEND_API_KEY) {
     return NextResponse.json({ message: '発送処理が完了しました（メール未設定のため送信スキップ）' }, { status: 200 })
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY)
 
+  // 追跡URLを生成（対応していない業者は番号のみ表示）
   const trackingUrl = TRACKING_URLS[carrier]
     ? `${TRACKING_URLS[carrier]}${tracking_number}`
     : null
@@ -58,8 +62,10 @@ export async function POST(request: NextRequest) {
     ? `追跡URL: ${trackingUrl}`
     : `追跡番号: ${tracking_number}`
 
+  // テスト用送信先があれば優先（開発・テスト用）、なければ注文者のアドレスを使用
   const toAddress = process.env.RESEND_TEST_TO || order.guest_email
 
+  // 商品リストのテキストを作成
   const items = (order.order_items as { product_name: string; unit_price: number; quantity: number }[]) ?? []
   const itemLines = items.map(
     (item) => `  ・${item.product_name}　¥${item.unit_price.toLocaleString()} × ${item.quantity}点　= ¥${(item.unit_price * item.quantity).toLocaleString()}`
@@ -100,6 +106,7 @@ export async function POST(request: NextRequest) {
     '  メール:     support@naniwa-select.example.com',
   ].join('\n')
 
+  // Resendを使用してメールを送信
   const { error: mailError } = await resend.emails.send({
     from: process.env.RESEND_FROM ?? 'naniwa-select@resend.dev',
     to: toAddress,
