@@ -1,16 +1,22 @@
 "use client"
 
+// 管理画面：注文管理ページ
+// 注文一覧表示、発送処理、キャンセル機能の処理が含まれてます。
+
 import { useEffect, useState } from "react"
 import { cancelOrder, logout } from "@/lib/actions"
 import { createClient } from "@/lib/supabase/client"
 import { taxIncluded } from "@/lib/utils/price"
 
+
+// -- 型定義 ---
 type OrderItem = {
   product_name: string
   unit_price: number
   quantity: number
 }
 
+// 注文データの全体構造
 type Order = {
   id: string
   order_number: string
@@ -31,14 +37,17 @@ type Order = {
 
 const CARRIERS = ["ヤマト運輸", "佐川急便", "ゆうパック", "その他"]
 
+// 数値を日本円形式にフォーマット
 function formatYen(value: number) {
   return `¥${value.toLocaleString("ja-JP")}`
 }
 
+// 単価から税込価格を取得
 function getTaxIncludedUnitPrice(unitPrice: number) {
   return taxIncluded(unitPrice)
 }
 
+// 注文全体の税込小計（商品合計）を計算
 function getTaxIncludedSubtotal(order: Order) {
   if (order.order_items.length === 0) {
     return taxIncluded(order.subtotal)
@@ -50,16 +59,19 @@ function getTaxIncludedSubtotal(order: Order) {
   )
 }
 
+// 税込の商品合計に送料を加算した総支払額を計算
 function getTaxIncludedTotal(order: Order) {
   return getTaxIncludedSubtotal(order) + order.shipping_fee
 }
 
+// 注文ステータスの表示用ラベルを取得
 function getStatusLabel(status: Order["status"]) {
   if (status === "pending") return "注文受付済み"
   if (status === "shipped") return "発送済み"
   return "キャンセル済み"
 }
 
+// 追跡番号の入力を正規化（全角→半角、ハイフン統一、不要な文字の削除）
 function normalizeTrackingNumber(value: string) {
   return value
     .replace(/[０-９Ａ-Ｚａ-ｚ]/g, (char) =>
@@ -72,14 +84,16 @@ function normalizeTrackingNumber(value: string) {
 export default function OrdersPage() {
   const supabase = createClient()
 
-  const [orders, setOrders] = useState<Order[]>([])
-  const [shipSelectOrder, setShipSelectOrder] = useState<Order | null>(null)
-  const [carrier, setCarrier] = useState(CARRIERS[0])
-  const [trackingNumber, setTrackingNumber] = useState("")
-  const [cancelSelectOrder, setCancelSelectOrder] = useState<Order | null>(null)
-  const [errorMsg, setErrorMsg] = useState("")
-  const [loading, setLoading] = useState(false)
+  // --- 状態管理 ---
+  const [orders, setOrders] = useState<Order[]>([])             // 注文一覧データ
+  const [shipSelectOrder, setShipSelectOrder] = useState<Order | null>(null) // 発送処理中の注文（モーダル表示用）
+  const [carrier, setCarrier] = useState(CARRIERS[0])           // 選択された配送業者
+  const [trackingNumber, setTrackingNumber] = useState("")       // 入力された追跡番号
+  const [cancelSelectOrder, setCancelSelectOrder] = useState<Order | null>(null) // キャンセル処理中の注文（モーダル表示用）
+  const [errorMsg, setErrorMsg] = useState("")                  // エラーメッセージ
+  const [loading, setLoading] = useState(false)                 // 処理中の読み込み状態
 
+  // Supabaseから注文一覧を取得
   const fetchOrders = async () => {
     const { data } = await supabase
       .from("orders")
@@ -98,10 +112,12 @@ export default function OrdersPage() {
     }
   }
 
+  // 初期レンダリング時にデータを取得
   useEffect(() => {
     fetchOrders()
   }, [])
 
+  // 発送情報入力モーダルを開く
   const openShipModal = (order: Order) => {
     setShipSelectOrder(order)
     setCarrier(CARRIERS[0])
@@ -109,6 +125,7 @@ export default function OrdersPage() {
     setErrorMsg("")
   }
 
+  // 発送確定処理
   const handleShip = async () => {
     if (!trackingNumber.trim()) {
       setErrorMsg("追跡番号を入力してください。")
@@ -120,6 +137,7 @@ export default function OrdersPage() {
     setErrorMsg("")
 
     try {
+      // 注文を発送済みに更新し、ユーザーへ通知メールを送信
       const res = await fetch("/api/ship", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -132,7 +150,7 @@ export default function OrdersPage() {
 
       if (res.ok) {
         setShipSelectOrder(null)
-        fetchOrders()
+        fetchOrders() // リストを再取得
         alert("発送済みに更新しました。")
       } else {
         const { message } = (await res.json()) as { message: string }
@@ -145,6 +163,7 @@ export default function OrdersPage() {
     }
   }
 
+  // キャンセル確定処理（Server Action呼び出し）
   const handleCancel = async () => {
     if (!cancelSelectOrder) return
 
@@ -159,12 +178,13 @@ export default function OrdersPage() {
       setErrorMsg(result.error)
     } else {
       setCancelSelectOrder(null)
-      fetchOrders()
+      fetchOrders() // リストを再取得
     }
   }
 
   return (
     <>
+      {/* 共通ナビゲーション */}
       <nav>
         <span className="nav-logo">なにわセレクトショップ 管理画面</span>
         <span className="nav-links">
@@ -208,6 +228,7 @@ export default function OrdersPage() {
                 <div style={{ fontWeight: 600 }}>{formatYen(getTaxIncludedTotal(order))}</div>
               </div>
 
+              {/* 合計・注文者・商品情報 */}
               <div
                 style={{
                   padding: "16px 20px",
@@ -240,12 +261,14 @@ export default function OrdersPage() {
                 </div>
               </div>
 
+              {/* 発送済みの場合の情報表示 */}
               {order.status === "shipped" && (
                 <div style={{ padding: "0 20px 16px", fontSize: "13px", color: "var(--muted)" }}>
                   {order.carrier} / 追跡番号: {order.tracking_number}
                 </div>
               )}
 
+              {/* 未発送（pending）の場合のアクションボタン */}
               {order.status === "pending" && (
                 <div style={{ padding: "0 20px 16px", display: "flex", gap: "8px" }}>
                   <button className="btn btn-outline" onClick={() => setCancelSelectOrder(order)}>
@@ -260,6 +283,7 @@ export default function OrdersPage() {
           ))}
         </div>
 
+        {/* 発送情報入力モーダル */}
         {shipSelectOrder !== null && (
           <div className="modal-overlay" onClick={() => setShipSelectOrder(null)}>
             <div onClick={(e) => e.stopPropagation()}>
@@ -303,6 +327,7 @@ export default function OrdersPage() {
           </div>
         )}
 
+        {/* 注文キャンセル確認モーダル */}
         {cancelSelectOrder !== null && (
           <div className="modal-overlay" onClick={() => setCancelSelectOrder(null)}>
             <div onClick={(e) => e.stopPropagation()}>
