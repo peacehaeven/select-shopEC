@@ -5,6 +5,7 @@ import HeroSection from "./components/HeroSection"
 export default async function TopPage() {
   const supabase = await createClient()
 
+  // Supabaseから全商品を取得（削除済みのものは除く、新着順）
   const { data: products } = await supabase
     .from("products")
     .select("*")
@@ -14,6 +15,7 @@ export default async function TopPage() {
   return (
     <>
       <HeroSection />
+
       <main id="product-list">
         <h2 className="section-title">商品一覧</h2>
         <div className="product-grid">
