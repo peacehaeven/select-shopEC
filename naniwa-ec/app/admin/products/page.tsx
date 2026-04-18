@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import ProductsClient from './ProductsClient'
 
+
+// 管理者認証・権限チェックを行い、商品一覧データをProductsClientに渡すサーバーコンポーネント
 export default async function AdminProductsPage() {
   const supabase = await createClient()
 
