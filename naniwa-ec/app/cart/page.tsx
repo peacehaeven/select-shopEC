@@ -29,6 +29,9 @@ export default function CartPage() {
   const [loading, setLoading] = useState(false)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
 
+
+
+/* ▼▼▼▼▼▼ 要分割 ▼▼▼▼▼▼（新規ファイル：lib/utils/format.tsなど） */
   // 郵便番号のフォーマット（数字のみ抽出し、ハイフンを挿入）
   const handlePostalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, "")
@@ -51,6 +54,7 @@ export default function CartPage() {
     const parts = value.match(/.{1,4}/g)
     setCardNumber(parts ? parts.join(" ") : "")
   }
+/* ▲▲▲▲▲▲▲ 要分割 ▲▲▲▲▲▲▲ */
 
   // --- 金額計算 ---
   const subtotal = items.reduce((sum, item) => sum + taxIncluded(item.price) * item.quantity, 0) // 商品小計（税込）
@@ -123,6 +127,8 @@ export default function CartPage() {
     router.push(`/order-complete?order_id=${orderId}`) // 完了ページへ遷移
   }
 
+
+/* ▼▼▼▼▼▼ 要分割 ▼▼▼▼▼▼（新規ファイル：app/components/ConfirmModal.tsxなど） */
   // --- UIコンポーネント: 確認モーダル ---
   const confirmModal =
     showConfirmModal && typeof document !== "undefined"
@@ -179,6 +185,7 @@ export default function CartPage() {
           document.body,
         )
       : null
+/* ▲▲▲▲▲▲▲ 要分割 ▲▲▲▲▲▲▲ */
 
   return (
     <>
