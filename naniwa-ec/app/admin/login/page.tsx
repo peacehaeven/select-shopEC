@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { login } from '@/lib/actions'
 
 export default function AdminLoginPage() {
+  // 入力欄の値と、エラー表示・送信中表示の状態を管理する。
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [errorMsg, setErrorMsg] = useState("")
@@ -42,6 +43,7 @@ export default function AdminLoginPage() {
       <div>
         <h1>管理者ログイン</h1>
         <div className="form-group">
+          {/* メールアドレス入力欄。入力内容を state と同期する。 */}
           <label>メールアドレス</label>
           <input
             type="email"
@@ -52,6 +54,7 @@ export default function AdminLoginPage() {
           />
         </div>
         <div className="form-group">
+          {/* パスワード入力欄。ブラウザ補完用に current-password を指定する。 */}
           <label>パスワード</label>
           <input
             type="password"
@@ -61,7 +64,9 @@ export default function AdminLoginPage() {
             autoComplete="current-password"
           />
         </div>
+        {/* 認証失敗時だけエラーメッセージを表示する。 */}
         {errorMsg && <p className="error">{errorMsg}</p>}
+        {/* ログイン処理中は二重送信を防ぐためボタンを無効化する。 */}
         <button className="btn btn-primary" onClick={handleLogin} disabled={loading}>
           {loading ? "ログイン中..." : "ログイン"}
         </button>

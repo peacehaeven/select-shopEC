@@ -10,6 +10,7 @@ export default function OrderCompletePage() {
   const orderId = searchParams.get("order_id")
   const [orderNumber, setOrderNumber] = useState<string | null>(null)
 
+  // URLのorder_idをもとに、DBから注文番号を取得
   useEffect(() => {
     if (!orderId) return
     const supabase = createClient()
