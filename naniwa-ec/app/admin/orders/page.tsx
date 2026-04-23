@@ -4,7 +4,8 @@
 // 注文一覧表示、発送処理、キャンセル機能の処理が含まれてます。
 
 import { useEffect, useState } from "react"
-import { cancelOrder, logout } from "@/lib/actions"
+import { cancelOrder } from "@/lib/actions/orders"
+import { logout } from "@/lib/actions/auth"
 import { createClient } from "@/lib/supabase/client"
 import { taxIncluded } from "@/lib/utils/price"
 
