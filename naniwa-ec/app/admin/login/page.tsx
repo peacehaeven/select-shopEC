@@ -1,6 +1,6 @@
 "use client"
 import { useState } from 'react'
-import { login } from '@/lib/actions'
+import { login } from '@/lib/actions/auth'
 
 export default function AdminLoginPage() {
   // 入力欄の値と、エラー表示・送信中表示の状態を管理する。

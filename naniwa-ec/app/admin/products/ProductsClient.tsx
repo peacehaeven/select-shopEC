@@ -1,8 +1,8 @@
 "use client"
 import { useState } from "react"
-import { addProduct, updateProduct, deleteProduct } from "@/lib/actions"
 import { taxIncluded, formatPrice, MAX_PRICE, MAX_STOCK } from "@/lib/utils/price"
-import { logout } from "@/lib/actions"
+import { addProduct, updateProduct, deleteProduct } from "@/lib/actions/products"
+import { logout } from "@/lib/actions/auth"
 
 // 商品データの型定義
 type Product = {
